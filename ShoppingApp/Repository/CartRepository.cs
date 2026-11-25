@@ -1,0 +1,93 @@
+﻿using ShoppingApp.Interfaces;
+using ShoppingApp.Models;
+using System.Text.Json;
+
+namespace ShoppingApp.Repository;
+
+public class CartRepository : ICartRepository
+{
+    private const string FilePath = "Data/Carts.json";
+
+    public Cart GetByUserId(Guid userId)
+    {
+        List<Cart> carts = this.GetAllCarts();
+
+        Cart? cart =
+            carts.FirstOrDefault(
+                c => c.UserId == userId);
+
+        if (cart == null)
+        {
+            cart = new Cart
+            {
+                UserId = userId
+            };
+
+            carts.Add(cart);
+            this.SaveAll(carts);
+        }
+
+        return cart;
+    }
+
+    public void Save(Cart cart)
+    {
+        List<Cart> carts = this.GetAllCarts();
+
+        int index =
+            carts.FindIndex(
+                c => c.UserId == cart.UserId);
+
+        if (index >= 0)
+        {
+            carts[index] = cart;
+        }
+        else
+        {
+            carts.Add(cart);
+        }
+
+        this.SaveAll(carts);
+    }
+
+    public void Clear(Guid userId)
+    {
+        List<Cart> carts = this.GetAllCarts();
+
+        Cart? cart =
+            carts.FirstOrDefault(
+                c => c.UserId == userId);
+
+        if (cart != null)
+        {
+            cart.Items.Clear();
+            this.SaveAll(carts);
+        }
+    }
+
+    private List<Cart> GetAllCarts()
+    {
+        if (!File.Exists(FilePath))
+        {
+            File.WriteAllText(FilePath, "[]");
+        }
+
+        string json = File.ReadAllText(FilePath);
+
+        return JsonSerializer.Deserialize<List<Cart>>(json)
+               ?? [];
+    }
+
+    private void SaveAll(List<Cart> carts)
+    {
+        string json =
+            JsonSerializer.Serialize(
+                carts,
+                new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+        File.WriteAllText(FilePath, json);
+    }
+}
