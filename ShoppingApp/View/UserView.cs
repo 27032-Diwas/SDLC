@@ -1,5 +1,6 @@
 ﻿using ShoppingApp.Constants;
 using Spectre.Console;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace ShoppingApp.View;
@@ -69,32 +70,41 @@ public class UserView
     /// </summary>
     /// <param name="prompt">The prompt message displayed to the user.</param>
     /// <returns>A validated password string.</returns>
-    public static string GetValidatedPassword(string prompt = "[cyan]Enter password:[/]")
+    public static string GetValidatedPassword(
+     string prompt = "[cyan]Enter password:[/]")
     {
-        IO.PrintEmptyLine();
-        return AnsiConsole.Prompt(
-            new TextPrompt<string>(prompt)
-                .PromptStyle("green")
-                .Secret('*')
-                .Validate(input =>
-                {
-                    if (string.IsNullOrWhiteSpace(input))
-                    {
-                        return ValidationResult.Error("[red]Password cannot be empty.[/]");
-                    }
+        while (true)
+        {
+            string password =
+                GetMaskedPasswordInput(
+                    prompt);
 
-                    if (input.Length < 4)
-                    {
-                        return ValidationResult.Error("[red]Password must be at least 4 characters long.[/]");
-                    }
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                IO.PrintInvalidMessage(
+                    "Password cannot be empty.");
 
-                    if (input.Contains(' '))
-                    {
-                        return ValidationResult.Error("[red]Password cannot contain spaces.[/]");
-                    }
+                continue;
+            }
 
-                    return ValidationResult.Success();
-                }));
+            if (password.Length < 4)
+            {
+                IO.PrintInvalidMessage(
+                    "Password must be at least 4 characters long.");
+
+                continue;
+            }
+
+            if (password.Contains(' '))
+            {
+                IO.PrintInvalidMessage(
+                    "Password cannot contain spaces.");
+
+                continue;
+            }
+
+            return password;
+        }
     }
 
     /// <summary>
@@ -103,38 +113,48 @@ public class UserView
     /// <param name="expectedPassword">The original password to match against.</param>
     /// <param name="prompt">The prompt message displayed to the user.</param>
     /// <returns>The confirmed password string.</returns>
-    public static string GetConfirmedPassword(string expectedPassword, string prompt = "[cyan]Confirm password:[/]")
+    public static string GetConfirmedPassword(
+    string expectedPassword,
+    string prompt = "[cyan]Confirm password:[/]")
     {
-        IO.PrintEmptyLine();
-        return AnsiConsole.Prompt(
-            new TextPrompt<string>(prompt)
-                .PromptStyle("green")
-                .Secret('*')
-                .Validate(input =>
-                {
-                    if (input != expectedPassword)
-                    {
-                        return ValidationResult.Error("[red]Passwords do not match. Please try again.[/]");
-                    }
+        while (true)
+        {
+            string password =
+                GetMaskedPasswordInput(
+                    prompt);
 
-                    return ValidationResult.Success();
-                }));
+            if (password != expectedPassword)
+            {
+                IO.PrintInvalidMessage(
+                    "Passwords do not match.");
+
+                continue;
+            }
+
+            return password;
+        }
     }
 
-    /// <summary>
-    /// Prompts the user for a masked secret input (such as a password).
-    /// </summary>
-    /// <param name="prompt">The prompt label displayed to the user.</param>
-    /// <returns>The secret string entered by the user.</returns>
-    public static string GetSecretInput(string prompt = $"[cyan]{UserPrompts.GetPassword}[/]")
+
+    public static string GetSecretInput(
+    string prompt = $"[cyan]{UserPrompts.GetPassword}[/]")
     {
-        IO.PrintEmptyLine();
-        return AnsiConsole.Prompt(
-            new TextPrompt<string>(prompt)
-                .PromptStyle("green")
-                .Secret('*')
-                .ValidationErrorMessage("[red]Password cannot be empty.[/]")
-                .Validate(input => !string.IsNullOrWhiteSpace(input)));
+        while (true)
+        {
+            string password =
+                GetMaskedPasswordInput(
+                    prompt);
+
+            if (string.IsNullOrWhiteSpace(password))
+            {
+                IO.PrintInvalidMessage(
+                    "Password cannot be empty.");
+
+                continue;
+            }
+
+            return password;
+        }
     }
 
     /// <summary>
@@ -222,5 +242,75 @@ public class UserView
 
                     return ValidationResult.Success();
                 }));
+    }
+
+    /// <summary>
+    /// Reads a password from the console.
+    /// Press TAB to toggle visibility.
+    /// </summary>
+    /// <param name="prompt">Prompt message.</param>
+    /// <returns>Password entered by the user.</returns>
+    public static string GetMaskedPasswordInput(string prompt)
+    {
+        IO.PrintEmptyLine();
+
+        AnsiConsole.Markup(prompt + " ");
+
+        StringBuilder password = new();
+        bool isHidden = true;
+
+        while (true)
+        {
+            ConsoleKeyInfo keyInfo =
+                Console.ReadKey(intercept: true);
+
+            if (keyInfo.Key == ConsoleKey.Enter)
+            {
+                Console.WriteLine();
+                break;
+            }
+
+            if (keyInfo.Key == ConsoleKey.Tab)
+            {
+                isHidden = !isHidden;
+
+                Console.Write("\r");
+
+                AnsiConsole.Markup(prompt + " ");
+
+                Console.Write(
+                    isHidden
+                        ? new string('*', password.Length)
+                        : password.ToString());
+
+                continue;
+            }
+
+            if (keyInfo.Key == ConsoleKey.Backspace)
+            {
+                if (password.Length > 0)
+                {
+                    password.Remove(
+                        password.Length - 1,
+                        1);
+
+                    Console.Write("\b \b");
+                }
+
+                continue;
+            }
+
+            if (!char.IsControl(keyInfo.KeyChar))
+            {
+                password.Append(keyInfo.KeyChar);
+
+                Console.Write(
+                    isHidden
+                        ? '*'
+                        : keyInfo.KeyChar);
+            }
+        }
+
+        return password.ToString();
     }
 }

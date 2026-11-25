@@ -2,6 +2,7 @@
 using ShoppingApp.Interfaces;
 using ShoppingApp.Repository;
 using ShoppingApp.Services;
+using QuestPDF.Infrastructure;
 
 namespace ShoppingApp;
 
@@ -9,6 +10,8 @@ public class Program
 {
     public static void Main()
     {
+        QuestPDF.Settings.License =
+    LicenseType.Community;
         IUserRepository userRepository =
     new UserRepository();
 
@@ -52,6 +55,10 @@ public class Program
 
         IInvoiceService invoiceService = new InvoiceService(invoiceRepository);
 
+        IInvoicePdfService invoicePdfService = new InvoicePdfService();
+
+        IAdminService adminService = new AdminService();
+
         UserController userController =
     new UserController(
         userService,
@@ -59,7 +66,9 @@ public class Program
         cartService,
         orderService,
         wishlistService,
-        invoiceService);
+        invoiceService,
+        invoicePdfService,
+        adminService);
 
         userController.Start();
     }

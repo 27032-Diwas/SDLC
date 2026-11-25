@@ -21,7 +21,7 @@ public static class ProductView
             table.AddRow(
                 product.Name,
                 product.Category,
-                $"₹ {product.Price}",
+                $"Rs.{product.Price}",
                 product.Stock.ToString());
         }
 

@@ -58,13 +58,13 @@ public static class IO
     /// <param name="title">The title shown above the menu choices.</param>
     /// <param name="options">The list of selectable menu options.</param>
     /// <returns>The selected option string.</returns>
-    public static string ShowSelectionMenu(string title, string[] options)
+    public static string ShowSelectionMenu(string title, string[] options, int size = 3)
     {
         PrintEmptyLine();
         return AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title(title)
-                .PageSize(3)
+                .PageSize(size)
                 .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
                 .HighlightStyle(new Style(Color.Cyan1, decoration: Decoration.Bold))
                 .AddChoices(options));
@@ -136,7 +136,7 @@ public static class IO
     /// </summary>
     /// <param name="header">The section header text.</param>
     /// <param name="bannerTitle">Optional large banner text rendered above the header.</param>
-    public static void ShowHeader(string header, string? bannerTitle = null)
+    public static void ShowHeader(string header, string bannerTitle = "SHOPPING APP")
     {
         ClearConsole();
 

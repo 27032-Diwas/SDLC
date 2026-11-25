@@ -15,6 +15,16 @@ public class ProductRepository : IProductRepository
                ?? [];
     }
 
+    public List<string> GetCategories()
+    {
+        return this.GetAllProducts()
+            .Select(product => product.Category)
+            .Distinct()
+            .OrderBy(category => category)
+            .ToList();
+    }
+
+
     public Product? GetProductById(Guid productId)
     {
         return this.GetAllProducts()
@@ -66,6 +76,55 @@ public class ProductRepository : IProductRepository
         if (index >= 0)
         {
             products[index] = updatedProduct;
+        }
+
+        string json =
+            JsonSerializer.Serialize(
+                products,
+                new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+        File.WriteAllText(
+            FilePath,
+            json);
+    }
+
+    public void AddProduct(Product product)
+    {
+        List<Product> products =
+            this.GetAllProducts();
+
+        products.Add(product);
+
+        string json =
+            JsonSerializer.Serialize(
+                products,
+                new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+        File.WriteAllText(
+            FilePath,
+            json);
+    }
+
+    public void DeleteProduct(Guid productId)
+    {
+        List<Product> products =
+            this.GetAllProducts();
+
+        Product? product =
+            products.FirstOrDefault(
+                product =>
+                    product.ProductId ==
+                    productId);
+
+        if (product != null)
+        {
+            products.Remove(product);
         }
 
         string json =

@@ -45,7 +45,7 @@ public class OrderRepository : IOrderRepository
         this.SaveAllOrders(orders);
     }
 
-    private List<Order> GetAllOrders()
+    public List<Order> GetAllOrders()
     {
         if (!File.Exists(FilePath))
         {

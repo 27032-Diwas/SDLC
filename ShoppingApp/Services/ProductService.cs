@@ -36,4 +36,25 @@ public class ProductService(
                 minPrice,
                 maxPrice);
     }
+
+    public List<string> GetCategories()
+    {
+        return productRepository.GetCategories();
+    }
+
+    public void AddProduct(Product product)
+    {
+        productRepository.AddProduct(product);
+    }
+
+    public void UpdateProduct(Product product)
+    {
+        productRepository.UpdateProduct(product);
+    }
+
+    public void DeleteProduct(Guid productId)
+    {
+        productRepository.DeleteProduct(
+            productId);
+    }
 }

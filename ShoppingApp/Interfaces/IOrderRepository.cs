@@ -11,4 +11,6 @@ public interface IOrderRepository
     Order? GetOrderById(Guid orderId);
 
     void UpdateOrder(Order order);
+
+    List<Order> GetAllOrders();
 }

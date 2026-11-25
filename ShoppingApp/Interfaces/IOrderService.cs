@@ -9,4 +9,8 @@ public interface IOrderService
     List<Order> GetOrderHistory(Guid userId);
 
     bool ReturnOrder(Guid orderId);
+
+    List<Order> GetAllOrders();
+
+    void PlaceDirectOrder(Order order);
 }

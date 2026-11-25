@@ -55,6 +55,11 @@ public class OrderService(
         return order;
     }
 
+    public List<Order> GetAllOrders()
+    {
+        return orderRepository.GetAllOrders();
+    }
+
     public List<Order> GetOrderHistory(Guid userId)
     {
         return orderRepository.GetOrdersByUserId(userId);
@@ -81,4 +86,34 @@ public class OrderService(
 
         return true;
     }
+
+    public void PlaceDirectOrder(
+    Order order)
+    {
+        foreach (CartItem item in order.Items)
+        {
+            Product? product =
+                productRepository.GetProductById(
+                    item.ProductId);
+
+            if (product == null)
+            {
+                continue;
+            }
+
+            if (product.Stock < item.Quantity)
+            {
+                throw new Exception(
+                    $"{product.Name} is out of stock.");
+            }
+
+            product.Stock -= item.Quantity;
+
+            productRepository.UpdateProduct(
+                product);
+        }
+
+        orderRepository.AddOrder(order);
+    }
+
 }

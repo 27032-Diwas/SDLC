@@ -20,12 +20,19 @@ public class UserController
     private readonly IWishlistService wishlistService;
 
     private readonly IInvoiceService invoiceService;
+
+    private readonly IInvoicePdfService invoicePdfService;
+
+    private readonly IAdminService adminService;
     public UserController(
     IUserService userService,
     IProductService productService,
     ICartService cartService,
     IOrderService orderService,
-    IWishlistService wishlistService, IInvoiceService invoiceService)
+    IWishlistService wishlistService,
+    IInvoiceService invoiceService,
+    IInvoicePdfService invoicePdfService,
+    IAdminService adminService)
     {
         this.userService = userService;
         this.productService = productService;
@@ -33,6 +40,8 @@ public class UserController
         this.orderService = orderService;
         this.wishlistService = wishlistService;
         this.invoiceService = invoiceService;
+        this.invoicePdfService = invoicePdfService;
+        this.adminService = adminService;
     }
 
     /// <summary>
@@ -107,6 +116,23 @@ public class UserController
         string email = UserView.GetValidatedEmail();
         string password = UserView.GetSecretInput();
 
+        if (this.adminService.Login(
+        email,
+        password))
+        {
+            IO.PrintSuccessMessage(
+                "Welcome Admin.");
+
+            AdminController adminController =
+                new(
+                    this.productService,
+                    this.orderService);
+
+            adminController.Start();
+
+            return;
+        }
+
         User? user = this.userService.Login(
             email,
             password);
@@ -117,7 +143,7 @@ public class UserController
             return;
         }
 
-        IO.PrintSuccessMessage($"Welcome back, {user.Name}!");
+        //  IO.PrintSuccessMessage($"Welcome back, {user.Name}!");
 
         HomeController homeController = new HomeController(
         user,
@@ -125,7 +151,8 @@ public class UserController
         this.cartService,
         this.orderService,
         this.wishlistService,
-        this.invoiceService);
+        this.invoiceService,
+        this.invoicePdfService);
 
         homeController.Start();
     }

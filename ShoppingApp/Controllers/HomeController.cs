@@ -11,14 +11,15 @@ public class HomeController(
     ICartService cartService,
     IOrderService orderService,
     IWishlistService wishlistService,
-    IInvoiceService invoiceService)
+    IInvoiceService invoiceService,
+    IInvoicePdfService invoicePdfService)
 {
     public void Start()
     {
         while (true)
         {
             IO.ShowHeader(
-                $"WELCOME {user.Name.ToUpper()}");
+                $"WELCOME {user.Name.ToUpper()}", "SHOPPING APP");
 
             string choice = IO.ShowSelectionMenu(
                 "Choose an option",
@@ -32,7 +33,7 @@ public class HomeController(
                     "Order History",
                     "Logout",
                     "Exit"
-                ]);
+                ],9);
 
             switch (choice)
             {
@@ -41,7 +42,10 @@ public class HomeController(
                         user,
                         productService,
                         cartService,
-                        wishlistService)
+                        wishlistService,
+                        orderService,
+                        invoiceService,
+                        invoicePdfService)
                         .ShowAllProducts();
                     break;
 
@@ -50,7 +54,10 @@ public class HomeController(
                         user,
                         productService,
                         cartService,
-                        wishlistService)
+                        wishlistService,
+                        orderService,
+                        invoiceService,
+                        invoicePdfService)
                         .SearchByName();
                     break;
 
@@ -59,7 +66,10 @@ public class HomeController(
                         user,
                         productService,
                         cartService,
-                        wishlistService)
+                        wishlistService,
+                        orderService,
+                        invoiceService,
+                        invoicePdfService)
                         .SearchByCategory();
                     break;
 
@@ -68,7 +78,10 @@ public class HomeController(
                         user,
                         productService,
                         cartService,
-                        wishlistService)
+                        wishlistService,
+                        orderService,
+                        invoiceService,
+                        invoicePdfService)
                         .SearchByPriceRange();
                     break;
 
@@ -76,7 +89,8 @@ public class HomeController(
                     new CartController(
                         cartService,
                         orderService,
-                        invoiceService)
+                        invoiceService,
+                        invoicePdfService)
                         .Start(user);
                     break;
 

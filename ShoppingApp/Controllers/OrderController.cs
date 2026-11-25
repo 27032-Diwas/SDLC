@@ -1,6 +1,7 @@
 ﻿using ShoppingApp.Models;
 using ShoppingApp.Services;
 using ShoppingApp.View;
+using Spectre.Console;
 
 namespace ShoppingApp.Controllers;
 
@@ -25,27 +26,82 @@ public class OrderController(
                 return;
             }
 
-            string selectedOrder =
+            this.DisplayOrders(orders);
+
+            string[] options =
+                orders.Select(
+                    (order, index) =>
+                    {
+                        string firstProduct =
+                            order.Items.Any()
+                                ? order.Items.First().ProductName
+                                : "Unknown Product";
+
+                        int remainingProducts =
+                            order.Items.Count - 1;
+
+                        return remainingProducts > 0
+                            ? $"{index + 1}. {firstProduct} (+{remainingProducts} more)"
+                            : $"{index + 1}. {firstProduct}";
+                    })
+                .Append("Back")
+                .ToArray();
+
+            string selectedOption =
                 IO.ShowSelectionMenu(
                     "Select Order",
-                    orders
-                        .Select(order =>
-                            $"{order.OrderId} | ₹{order.TotalAmount}")
-                        .Append("Back")
-                        .ToArray());
+                    options,
+                    10);
 
-            if (selectedOrder == "Back")
+            if (selectedOption == "Back")
             {
                 return;
             }
 
-            Order order =
-                orders.First(
-                    x => selectedOrder.Contains(
-                        x.OrderId.ToString()));
+            int selectedIndex =
+                int.Parse(
+                    selectedOption
+                        .Split('.')[0])
+                - 1;
 
-            this.ShowOrderDetails(order);
+            Order selectedOrder =
+                orders[selectedIndex];
+
+            this.ShowOrderDetails(
+                selectedOrder);
         }
+    }
+
+    private void DisplayOrders(
+        List<Order> orders)
+    {
+        Table table = new();
+
+        table.Border(TableBorder.Rounded);
+
+        table.AddColumn("Products");
+        table.AddColumn("Order Date");
+        table.AddColumn("Amount");
+        table.AddColumn("Status");
+
+        foreach (Order order in orders)
+        {
+            string products =
+                string.Join(
+                    ", ",
+                    order.Items.Select(
+                        item => item.ProductName));
+
+            table.AddRow(
+                products,
+                order.OrderDate.ToString("dd-MM-yyyy"),
+                $"Rs. {order.TotalAmount}",
+                order.Status);
+        }
+
+        AnsiConsole.Write(table);
+
+        IO.PrintEmptyLine();
     }
 
     private void ShowOrderDetails(
@@ -54,24 +110,37 @@ public class OrderController(
         IO.ShowHeader("ORDER DETAILS");
 
         IO.PrintInConsole(
-            $"[cyan]Order Id:[/] {order.OrderId}");
-
-        IO.PrintInConsole(
-            $"[cyan]Order Date:[/] {order.OrderDate}");
+            $"[cyan]Order Date:[/] [green]{order.OrderDate:dd-MM-yyyy HH:mm}[/]");
 
         IO.PrintInConsole(
             $"[cyan]Status:[/] [green]{order.Status}[/]");
 
         IO.PrintInConsole(
-            $"[cyan]Total:[/] ₹{order.TotalAmount}");
+            $"[cyan]Total Amount:[/] [green]Rs. {order.TotalAmount}[/]");
 
         IO.PrintEmptyLine();
 
+        Table table = new();
+
+        table.Border(TableBorder.Rounded);
+
+        table.AddColumn("Product");
+        table.AddColumn("Quantity");
+        table.AddColumn("Unit Price");
+        table.AddColumn("Total");
+
         foreach (CartItem item in order.Items)
         {
-            IO.PrintInConsole(
-                $"• {item.ProductName} | Qty : {item.Quantity} | ₹{item.TotalPrice}");
+            table.AddRow(
+                item.ProductName,
+                item.Quantity.ToString(),
+                $"Rs. {item.UnitPrice}",
+                $"Rs. {item.TotalPrice}");
         }
+
+        AnsiConsole.Write(table);
+
+        IO.PrintEmptyLine();
 
         string choice =
             IO.ShowSelectionMenu(

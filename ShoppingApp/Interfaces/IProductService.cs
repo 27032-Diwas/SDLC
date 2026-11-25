@@ -15,4 +15,12 @@ public interface IProductService
     List<Product> SearchByPriceRange(
         decimal minPrice,
         decimal maxPrice);
+
+    List<string> GetCategories();
+
+    void AddProduct(Product product);
+
+    void UpdateProduct(Product product);
+
+    void DeleteProduct(Guid productId);
 }

@@ -17,4 +17,10 @@ public interface IProductRepository
         decimal maxPrice);
 
     void UpdateProduct(Product product);
+
+    void AddProduct(Product product);
+
+    void DeleteProduct(Guid productId);
+
+    List<string> GetCategories();
 }

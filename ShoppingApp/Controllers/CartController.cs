@@ -6,7 +6,7 @@ namespace ShoppingApp.Controllers;
 
 public class CartController(
     ICartService cartService,
-    IOrderService orderService, IInvoiceService invoiceService)
+    IOrderService orderService, IInvoiceService invoiceService, IInvoicePdfService invoicePdfService)
 {
     public void Start(User user)
     {
@@ -17,13 +17,14 @@ public class CartController(
 
             IO.ShowHeader("MY CART");
 
-            CartView.DisplayCart(cart);
 
             if (!cart.Items.Any())
             {
-                IO.WaitInConsole();
+                IO.PrintInvalidMessage("Cart is empty");
                 return;
             }
+
+            CartView.DisplayCart(cart);
 
             string choice =
                 IO.ShowSelectionMenu(
@@ -33,7 +34,7 @@ public class CartController(
                         "Remove Product",
                         "Checkout",
                         "Back"
-                    ]);
+                    ],4);
 
             switch (choice)
             {
@@ -130,6 +131,14 @@ public class CartController(
         InvoiceView.DisplayInvoice(
             invoice);
 
-        IO.WaitInConsole();
+        string pdfPath =
+        invoicePdfService
+            .GenerateInvoicePdf(
+                invoice);
+
+        IO.PrintSuccessMessage(
+            $"Invoice PDF generated successfully.\nLocation: {pdfPath}");
+
+        //IO.WaitInConsole();
     }
 }
