@@ -191,41 +191,11 @@ public class ProductController(
                     IO.GetStringInput(
                         $"Enter quantity (Max {product.Stock})"));
 
-            if (quantity <= 0)
-            {
-                IO.PrintInvalidMessage(
-                    "Quantity should be greater than 0.");
-
-                return;
-            }
-
-            if (quantity > product.Stock)
-            {
-                IO.PrintInvalidMessage(
-                    "Insufficient stock.");
-
-                return;
-            }
-
-            CartItem item = new()
-            {
-                ProductId = product.ProductId,
-                ProductName = product.Name,
-                UnitPrice = product.Price,
-                Quantity = quantity
-            };
-
-            Order order = new()
-            {
-                OrderId = Guid.NewGuid(),
-                UserId = user.UserId,
-                Items = [item],
-                OrderDate = DateTime.Now,
-                TotalAmount = item.TotalPrice,
-                Status = "Placed"
-            };
-
-            orderService.PlaceDirectOrder(order);
+            Order order =
+                orderService.PlaceDirectOrder(
+                    user.UserId,
+                    product.ProductId,
+                    quantity);
 
             Invoice invoice =
                 invoiceService.GenerateInvoice(
@@ -235,12 +205,12 @@ public class ProductController(
             InvoiceView.DisplayInvoice(
                 invoice);
 
-            string filePath =
+            string pdfPath =
                 invoicePdfService.GenerateInvoicePdf(
                     invoice);
 
             IO.PrintSuccessMessage(
-                $"Order placed successfully.\nInvoice saved at:\n{filePath}");
+                $"Order placed successfully.\nInvoice saved at:\n{pdfPath}");
         }
         catch (Exception exception)
         {

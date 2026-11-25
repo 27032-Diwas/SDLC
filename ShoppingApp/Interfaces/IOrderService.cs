@@ -12,5 +12,8 @@ public interface IOrderService
 
     List<Order> GetAllOrders();
 
-    void PlaceDirectOrder(Order order);
+    Order PlaceDirectOrder(
+    Guid userId,
+    Guid productId,
+    int quantity);
 }

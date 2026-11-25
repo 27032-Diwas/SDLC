@@ -87,33 +87,81 @@ public class OrderService(
         return true;
     }
 
-    public void PlaceDirectOrder(
-    Order order)
+    public Order PlaceDirectOrder(
+    Guid userId,
+    Guid productId,
+    int quantity)
     {
-        foreach (CartItem item in order.Items)
+        Product? product =
+            productRepository.GetProductById(
+                productId);
+
+        if (product == null)
         {
-            Product? product =
-                productRepository.GetProductById(
-                    item.ProductId);
-
-            if (product == null)
-            {
-                continue;
-            }
-
-            if (product.Stock < item.Quantity)
-            {
-                throw new Exception(
-                    $"{product.Name} is out of stock.");
-            }
-
-            product.Stock -= item.Quantity;
-
-            productRepository.UpdateProduct(
-                product);
+            throw new Exception(
+                "Product not found.");
         }
 
+        if (quantity <= 0)
+        {
+            throw new Exception(
+                "Quantity must be greater than zero.");
+        }
+
+        if (quantity > product.Stock)
+        {
+            throw new Exception(
+                "Insufficient stock.");
+        }
+
+        product.Stock -= quantity;
+
+        productRepository.UpdateProduct(
+            product);
+
+        Cart cart =
+            cartRepository.GetByUserId(
+                userId);
+
+        CartItem? cartItem =
+            cart.Items.FirstOrDefault(
+                item => item.ProductId == productId);
+
+        if (cartItem != null)
+        {
+            if (cartItem.Quantity <= quantity)
+            {
+                cart.Items.Remove(cartItem);
+            }
+            else
+            {
+                cartItem.Quantity -= quantity;
+            }
+
+            cartRepository.Save(cart);
+        }
+
+        CartItem orderItem = new()
+        {
+            ProductId = product.ProductId,
+            ProductName = product.Name,
+            UnitPrice = product.Price,
+            Quantity = quantity
+        };
+
+        Order order = new()
+        {
+            OrderId = Guid.NewGuid(),
+            UserId = userId,
+            Items = [orderItem],
+            TotalAmount = orderItem.TotalPrice,
+            OrderDate = DateTime.Now,
+            Status = "Placed"
+        };
+
         orderRepository.AddOrder(order);
+
+        return order;
     }
 
 }
