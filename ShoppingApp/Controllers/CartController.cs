@@ -136,47 +136,54 @@ public class CartController(
 
     private void Checkout(User user)
     {
-        bool confirm =
+        try
+        {
+            bool confirm =
             IO.ConfirmAction(
                 "Proceed to checkout?");
 
-        if (!confirm)
-        {
-            return;
+            if (!confirm)
+            {
+                return;
+            }
+
+            if (user.Address == null)
+            {
+                IO.PrintInConsole(
+                    "[yellow]Delivery address required.[/]");
+
+                Address address =
+                    this.GetAddress();
+
+                user.Address = address;
+
+                userService.UpdateUser(user);
+            }
+
+            Order order =
+                orderService.Checkout(
+                    user.UserId);
+
+            Invoice invoice =
+                invoiceService.GenerateInvoice(
+                    order,
+                    user);
+
+            InvoiceView.DisplayInvoice(
+                invoice);
+
+            string pdfPath =
+                invoicePdfService
+                    .GenerateInvoicePdf(
+                        invoice);
+
+            IO.PrintSuccessMessage(
+                $"Invoice PDF generated successfully.\nLocation: {pdfPath}");
         }
-
-        if (user.Address == null)
+        catch (Exception ex)
         {
-            IO.PrintInConsole(
-                "[yellow]Delivery address required.[/]");
-
-            Address address =
-                this.GetAddress();
-
-            user.Address = address;
-
-            userService.UpdateUser(user);
+            IO.PrintInvalidMessage(ex.Message);
         }
-
-        Order order =
-            orderService.Checkout(
-                user.UserId);
-
-        Invoice invoice =
-            invoiceService.GenerateInvoice(
-                order,
-                user);
-
-        InvoiceView.DisplayInvoice(
-            invoice);
-
-        string pdfPath =
-            invoicePdfService
-                .GenerateInvoicePdf(
-                    invoice);
-
-        IO.PrintSuccessMessage(
-            $"Invoice PDF generated successfully.\nLocation: {pdfPath}");
     }
 
     private Address GetAddress()

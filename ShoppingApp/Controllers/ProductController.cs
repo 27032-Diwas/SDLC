@@ -226,8 +226,7 @@ public class ProductController(
         }
         catch (Exception exception)
         {
-            IO.PrintInvalidMessage(
-                exception.Message);
+            IO.PrintInvalidMessage(exception.Message);
         }
     }
 

@@ -28,8 +28,7 @@ public class AdminController(IProductService productService, IOrderService order
                         "Delete Product",
                         "View Orders",
                         "View Returned Orders",
-                        "Logout",
-                        Configurables.Exit
+                        "Logout"
                     ], 11);
 
             switch (choice)
@@ -71,10 +70,6 @@ public class AdminController(IProductService productService, IOrderService order
                     break;
 
                 case "Logout":
-                    return;
-
-                case Configurables.Exit:
-                    IO.ExitApplication();
                     return;
             }
         }

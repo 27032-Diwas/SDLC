@@ -2,5 +2,5 @@
 
 public static class Site
 {
-    public const string color = "Green";
+    public const string color = "LightGreen";
 }

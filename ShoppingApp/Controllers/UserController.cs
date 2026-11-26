@@ -95,17 +95,23 @@ public class UserController
         //string pinCode = UserView.GetValidatedPincode();
 
         //Address address = new Address(houseNo, selectedDistrict, selectedState, pinCode);
-
-        bool result = this.userService.RegisterUser(
-            Name,
-            email,
-            phoneNumber,
-            password,
-            null);
-
-        if (result)
+        try
         {
-            IO.PrintSuccessMessage("Sign up successful! You can now log in.");
+            bool result = this.userService.RegisterUser(
+                Name,
+                email,
+                phoneNumber,
+                password,
+                null);
+
+            if (result)
+            {
+                IO.PrintSuccessMessage("Sign up successful! You can now log in.");
+            }
+        }
+        catch (Exception ex)
+        {
+            IO.PrintInvalidMessage(ex.Message);
         }
     }
 
