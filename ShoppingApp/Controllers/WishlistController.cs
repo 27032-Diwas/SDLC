@@ -37,7 +37,7 @@ public class WishlistController(
                     products
                         .Select(product => product.Name)
                         .Append("Back")
-                        .ToArray());
+                        .ToArray(), 10);
 
             if (selectedProduct == "Back")
             {
@@ -109,14 +109,26 @@ public class WishlistController(
     }
 
     private void AddToCart(
-        User user,
-        Product product)
+    User user,
+    Product product)
     {
         try
         {
+            Cart cart =
+                cartService.GetCart(
+                    user.UserId);
+
+            CartItem? cartItem =
+                cart.Items.FirstOrDefault(
+                    item => item.ProductId == product.ProductId);
+
+            string prompt =
+                cartItem == null
+                    ? $"Enter quantity (Max {product.Stock})"
+                    : $"Enter quantity (Max {product.Stock}, Already in Cart: {cartItem.Quantity})";
+
             int quantity =
-                    IO.GetIntInput(
-                        $"Enter quantity (Max {product.Stock})");
+                IO.GetIntInput(prompt);
 
             cartService.AddToCart(
                 user.UserId,
@@ -124,7 +136,9 @@ public class WishlistController(
                 quantity);
 
             IO.PrintSuccessMessage(
-                "Product moved to cart.");
+                cartItem == null
+                    ? "Product added to cart."
+                    : $"Product quantity updated. Total in cart: {cartItem.Quantity + quantity}");
         }
         catch (Exception exception)
         {

@@ -120,13 +120,13 @@ public class UserController
         email,
         password))
         {
-            IO.PrintSuccessMessage(
-                "Welcome Admin.");
+            //IO.PrintSuccessMessage("Welcome Admin.");
 
             AdminController adminController =
                 new(
                     this.productService,
-                    this.orderService);
+                    this.orderService,
+                    this.adminService);
 
             adminController.Start();
 

@@ -18,6 +18,19 @@ public class WishlistRepository
             .ToList();
     }
 
+    public void RemoveProductFromAllWishlists(
+    Guid productId)
+    {
+        List<WishlistItem> wishlists =
+            this.GetAll();
+
+        wishlists.RemoveAll(
+            item => item.ProductId == productId);
+
+        this.SaveAll(wishlists);
+    }
+
+
     public void Add(WishlistItem item)
     {
         List<WishlistItem> wishlists =

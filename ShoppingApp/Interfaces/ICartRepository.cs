@@ -22,4 +22,9 @@ public interface ICartRepository
     /// </summary>
     /// <param name="userId">The unique identifier of the user whose cart workflow is being cleared.</param>
     void Clear(Guid userId);
+
+    void RemoveProductFromAllCarts(Guid productId);
+
+    void UpdateProductInCarts(Product product);
+
 }

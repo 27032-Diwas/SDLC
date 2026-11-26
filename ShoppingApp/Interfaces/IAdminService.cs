@@ -1,4 +1,6 @@
-﻿namespace ShoppingApp.Interfaces;
+﻿using ShoppingApp.Models;
+
+namespace ShoppingApp.Interfaces;
 
 public interface IAdminService
 {
@@ -11,4 +13,8 @@ public interface IAdminService
     /// True if the login process completes successfully; otherwise, false.
     /// </returns>
     bool Login(string email, string password);
+
+    void DeleteProduct(Guid productId);
+
+    void UpdateProduct(Product product);
 }

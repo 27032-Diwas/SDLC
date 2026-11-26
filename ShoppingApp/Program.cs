@@ -26,7 +26,8 @@ public class Program
         IWishlistService wishlistService = new WishlistService(wishlistRepository, productRepository);
         IInvoiceService invoiceService = new InvoiceService(invoiceRepository);
         IInvoicePdfService invoicePdfService = new InvoicePdfService();
-        IAdminService adminService = new AdminService();
+        IAdminService adminService = new AdminService(productRepository, cartRepository, wishlistRepository);
+
 
         UserController userController =
             new UserController(userService,

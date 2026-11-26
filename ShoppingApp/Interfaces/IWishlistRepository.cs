@@ -23,4 +23,6 @@ public interface IWishlistRepository
     /// <param name="userId">Identifier of the user whose wishlist is being modified.</param>
     /// <param name="productId">Identifier of the product to remove from the wishlist.</param>
     void Remove(Guid userId, Guid productId);
+
+    void RemoveProductFromAllWishlists(Guid productId);
 }

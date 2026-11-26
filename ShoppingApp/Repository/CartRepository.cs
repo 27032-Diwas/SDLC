@@ -65,6 +65,48 @@ public class CartRepository : ICartRepository
         }
     }
 
+    public void RemoveProductFromAllCarts(
+    Guid productId)
+    {
+        List<Cart> carts =
+            this.GetAllCarts();
+
+        foreach (Cart cart in carts)
+        {
+            cart.Items.RemoveAll(
+                item => item.ProductId == productId);
+        }
+
+        this.SaveAll(carts);
+    }
+
+    public void UpdateProductInCarts(
+    Product product)
+    {
+        List<Cart> carts =
+            this.GetAllCarts();
+
+        foreach (Cart cart in carts)
+        {
+            CartItem? item =
+                cart.Items.FirstOrDefault(
+                    cartItem =>
+                        cartItem.ProductId ==
+                        product.ProductId);
+
+            if (item != null)
+            {
+                item.ProductName =
+                    product.Name;
+
+                item.UnitPrice =
+                    product.Price;
+            }
+        }
+
+        this.SaveAll(carts);
+    }
+
     private List<Cart> GetAllCarts()
     {
         if (!File.Exists(FilePath))

@@ -1,4 +1,5 @@
-﻿using ShoppingApp.Interfaces;
+﻿using ShoppingApp.Constants;
+using ShoppingApp.Interfaces;
 using ShoppingApp.Models;
 using ShoppingApp.Services;
 using ShoppingApp.View;
@@ -6,7 +7,7 @@ using Spectre.Console;
 
 namespace ShoppingApp.Controllers;
 
-public class AdminController(IProductService productService, IOrderService orderService)
+public class AdminController(IProductService productService, IOrderService orderService, IAdminService adminService)
 {
     public void Start()
     {
@@ -19,18 +20,34 @@ public class AdminController(IProductService productService, IOrderService order
                     "Select Option",
                     [
                         "View Products",
+                        "Search By Name",
+                        "Search By Category",
+                        "Search By Price Range",
                         "Add Product",
                         "Edit Product",
                         "Delete Product",
                         "View Orders",
                         "View Returned Orders",
-                        "Logout"
-                    ], 7);
+                        "Logout",
+                        Configurables.Exit
+                    ], 11);
 
             switch (choice)
             {
                 case "View Products":
                     this.ViewProducts();
+                    break;
+
+                case "Search By Name":
+                    this.SearchByName();
+                    break;
+
+                case "Search By Category":
+                    this.SearchByCategory();
+                    break;
+
+                case "Search By Price Range":
+                    this.SearchByPriceRange();
                     break;
 
                 case "Add Product":
@@ -55,6 +72,10 @@ public class AdminController(IProductService productService, IOrderService order
 
                 case "Logout":
                     return;
+
+                case Configurables.Exit:
+                    IO.ExitApplication();
+                    return;
             }
         }
     }
@@ -63,7 +84,123 @@ public class AdminController(IProductService productService, IOrderService order
     {
         IO.ShowHeader("PRODUCTS");
         List<Product> products = productService.GetAllProducts();
-        ProductView.DisplayProducts(products);
+        this.DisplayProducts(products);
+        IO.WaitInConsole();
+    }
+
+
+    private void SearchByName()
+    {
+        string keyword = IO.GetStringInput("[cyan]Enter product name:[/]");
+
+        List<Product> products = productService.SearchByName(keyword);
+
+        this.DisplayProducts(products);
+    }
+
+    private void SearchByCategory()
+    {
+        string[] categories =
+        productService
+            .GetCategories()
+            .Append("Back")
+            .ToArray();
+
+        string selectedCategory =
+            IO.ShowSelectionMenu(
+                "[cyan]Select Category:[/]",
+                categories, 10);
+
+        if (selectedCategory == "Back")
+        {
+            return;
+        }
+
+        List<Product> products =
+            productService.SearchByCategory(selectedCategory);
+
+        this.DisplayProducts(products);
+    }
+
+    private void SearchByPriceRange()
+    {
+        decimal minPrice = IO.GetIntInput("[cyan]Enter minimum price:[/]");
+
+        decimal maxPrice = IO.GetIntInput("[cyan]Enter maximum price:[/]");
+
+        List<Product> products =
+            productService.SearchByPriceRange(
+                minPrice,
+                maxPrice);
+
+        this.DisplayProducts(products);
+    }
+
+    private void DisplayProducts(
+        List<Product> products)
+    {
+        while (true)
+        {
+            if (!products.Any())
+            {
+                IO.PrintInvalidMessage(
+                    "No products found.");
+
+                return;
+            }
+
+            ProductView.DisplayProducts(products);
+
+            string selectedProductName =
+                IO.ShowSelectionMenu(
+                    "[bold cyan]Select a product:[/]",
+                    products
+                        .Select(product => product.Name)
+                        .Append("Back")
+                        .ToArray(), 10);
+
+            if (selectedProductName == "Back")
+            {
+                return;
+            }
+
+            Product selectedProduct =
+                products.First(
+                    product =>
+                        product.Name ==
+                        selectedProductName);
+
+            this.ShowProductDetails(
+                selectedProduct);
+        }
+    }
+
+    private void ShowProductDetails(
+        Product product)
+    {
+        IO.ShowHeader(
+            product.Name);
+
+        IO.PrintInConsole(
+            $"[cyan]Description:[/] {product.Description}");
+
+        IO.PrintInConsole(
+            $"[cyan]Category:[/] [green]{product.Category}[/]");
+
+        IO.PrintInConsole(
+            $"[cyan]Price:[/] [green]Rs.{product.Price}[/]");
+
+        if (product.Stock == 0)
+        {
+            IO.PrintInConsole(
+            $"[cyan]Stock:[/] [red] Out of stock [/]");
+        }
+        else
+        {
+            IO.PrintInConsole(
+                $"[cyan]Stock:[/] [green]{product.Stock}[/]");
+        }
+
         IO.WaitInConsole();
     }
 
@@ -100,7 +237,8 @@ public class AdminController(IProductService productService, IOrderService order
     {
         IO.ShowHeader("EDIT PRODUCT");
 
-        List<Product> products = productService.GetAllProducts();
+        List<Product> products =
+            productService.GetAllProducts();
 
         string selectedProduct =
             IO.ShowSelectionMenu(
@@ -122,26 +260,65 @@ public class AdminController(IProductService productService, IOrderService order
                     product.Name ==
                     selectedProduct);
 
-        product.Name = IO.GetStringInput($"Product Name ({product.Name})");
+        while (true)
+        {
+            IO.ShowHeader($"EDIT : {product.Name}");
 
-        product.Description = IO.GetStringInput($"Description ({product.Description})");
+            string choice =
+                IO.ShowSelectionMenu(
+                    "Select Field",
+                    [
+                        "Name",
+                    "Description",
+                    "Category",
+                    "Price",
+                    "Stock",
+                    "Save & Back"
+                    ], 6);
 
-        product.Category =
-            IO.GetStringInput(
-                $"Category ({product.Category})");
+            switch (choice)
+            {
+                case "Name":
+                    product.Name =
+                        IO.GetStringInput(
+                            $"Current: {product.Name}");
+                    break;
 
-        product.Price =
-                IO.GetDecimalInput(
-                    $"Price ({product.Price})");
+                case "Description":
+                    product.Description =
+                        IO.GetStringInput(
+                            $"Current: {product.Description}");
+                    break;
 
-        product.Stock =
-                IO.GetIntInput(
-                    $"Stock ({product.Stock})");
+                case "Category":
+                    product.Category =
+                        IO.GetStringInput(
+                            $"Current: {product.Category}");
+                    break;
 
-        productService.UpdateProduct(product);
+                case "Price":
+                    product.Price =
+                        IO.GetDecimalInput(
+                            $"Current: {product.Price}");
+                    break;
 
-        IO.PrintSuccessMessage(
-            "Product updated successfully.");
+                case "Stock":
+                    product.Stock =
+                        IO.GetIntInput(
+                            $"Current: {product.Stock}");
+                    break;
+
+                case "Save & Back":
+
+                    adminService.UpdateProduct(
+                        product);
+
+                    IO.PrintSuccessMessage(
+                        "Product updated successfully.");
+
+                    return;
+            }
+        }
     }
 
     private void DeleteProduct()
@@ -180,8 +357,7 @@ public class AdminController(IProductService productService, IOrderService order
             return;
         }
 
-        productService.DeleteProduct(
-            product.ProductId);
+        adminService.DeleteProduct(product.ProductId);
 
         IO.PrintSuccessMessage(
             "Product deleted successfully.");

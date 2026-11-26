@@ -24,8 +24,7 @@ public class ProductController(
 
     public void SearchByName()
     {
-        string keyword =
-            IO.GetStringInput("[cyan]Enter product name:[/]");
+        string keyword = IO.GetStringInput("[cyan]Enter product name:[/]");
 
         List<Product> products = productService.SearchByName(keyword);
 
@@ -126,6 +125,16 @@ public class ProductController(
 
             IO.PrintInConsole(
                 $"[cyan]Price:[/] [green]Rs.{product.Price}[/]");
+
+            Cart cart = cartService.GetCart(user.UserId);
+
+            CartItem? cartItem = cart.Items.FirstOrDefault(item => item.ProductId == product.ProductId);
+
+            if (cartItem != null)
+            {
+                IO.PrintInConsole($"[cyan]In Cart:[/] [yellow]{cartItem.Quantity} item(s)[/]");
+            }
+
             if (product.Stock == 0)
             {
                 IO.PrintInConsole(
