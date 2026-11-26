@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using ShoppingApp.Constants;
+using Spectre.Console;
 
 namespace ShoppingApp.View;
 
@@ -118,7 +119,7 @@ public static class IO
                 .Title(title)
                 .PageSize(size)
                 .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
-                .HighlightStyle(new Style(Color.Cyan1, decoration: Decoration.Bold))
+                .HighlightStyle(new Style(Color.Green, decoration: Decoration.Bold))
                 .AddChoices(options));
     }
 
@@ -197,13 +198,13 @@ public static class IO
             AnsiConsole.Write(
                 new FigletText(bannerTitle)
                     .Centered()
-                    .Color(Color.Cyan1));
+                    .Color(Color.Green1));
         }
 
         var rule = new Rule($"[bold yellow]{Markup.Escape(header)}[/]")
         {
             Justification = Justify.Center,
-            Style = Style.Parse("cyan"),
+            Style = Style.Parse(Site.color),
         };
         AnsiConsole.Write(rule);
         PrintEmptyLine();
@@ -223,11 +224,11 @@ public static class IO
     public static void ExitApplication()
     {
         ClearConsole();
-        var panel = new Panel("[bold cyan]Thank you for using choosing our shop! Come again.[/]")
+        var panel = new Panel($"[{Site.color}]Thank you for using choosing our shop! Come again.[/]")
         {
             Border = BoxBorder.Double,
             Padding = new Padding(2, 1),
-            BorderStyle = new Style(Color.Cyan1),
+            BorderStyle = new Style(Color.Green1),
         };
         AnsiConsole.Write(Align.Center(panel));
         WaitInConsole();

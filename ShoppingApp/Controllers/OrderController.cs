@@ -1,4 +1,5 @@
-﻿using ShoppingApp.Models;
+﻿using ShoppingApp.Constants;
+using ShoppingApp.Models;
 using ShoppingApp.Services;
 using ShoppingApp.View;
 using Spectre.Console;
@@ -109,13 +110,13 @@ public class OrderController(
         IO.ShowHeader("ORDER DETAILS");
 
         IO.PrintInConsole(
-            $"[cyan]Order Date:[/] [green]{order.OrderDate:dd-MM-yyyy HH:mm}[/]");
+            $"[{Site.color}]Order Date:[/] [green]{order.OrderDate:dd-MM-yyyy HH:mm}[/]");
 
         IO.PrintInConsole(
-            $"[cyan]Status:[/] [green]{order.Status}[/]");
+            $"[{Site.color}]Status:[/] [green]{order.Status}[/]");
 
         IO.PrintInConsole(
-            $"[cyan]Total Amount:[/] [green]Rs. {order.TotalAmount}[/]");
+            $"[{Site.color}]Total Amount:[/] [green]Rs. {order.TotalAmount}[/]");
 
         IO.PrintEmptyLine();
 

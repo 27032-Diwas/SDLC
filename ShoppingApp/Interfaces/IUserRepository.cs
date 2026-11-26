@@ -17,4 +17,6 @@ public interface IUserRepository
     /// <param name="email">The email address of the user to retrieve.</param>
     /// <returns>The matching user if found; otherwise, null.</returns>
     User? GetUserByEmail(string email);
+
+    void UpdateUser(User user);
 }

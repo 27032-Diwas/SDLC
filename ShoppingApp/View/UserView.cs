@@ -12,7 +12,7 @@ public class UserView
     /// </summary>
     /// <param name="prompt">The prompt message displayed to the user.</param>
     /// <returns>A validated, trimmed email string.</returns>
-    public static string GetValidatedEmail(string prompt = $"[cyan]{UserPrompts.GetEmail}[/]")
+    public static string GetValidatedEmail(string prompt = $"[{Site.color}]{UserPrompts.GetEmail}[/]")
     {
         IO.PrintEmptyLine();
         return AnsiConsole.Prompt(
@@ -41,7 +41,7 @@ public class UserView
     /// </summary>
     /// <param name="prompt">The prompt message displayed to the user.</param>
     /// <returns>A validated, trimmed phone number string.</returns>
-    public static string GetValidatedPhoneNumber(string prompt = $"[cyan]{UserPrompts.GetPhoneNumber}[/]")
+    public static string GetValidatedPhoneNumber(string prompt = $"[{Site.color}]{UserPrompts.GetPhoneNumber}[/]")
     {
         IO.PrintEmptyLine();
         return AnsiConsole.Prompt(
@@ -71,7 +71,7 @@ public class UserView
     /// <param name="prompt">The prompt message displayed to the user.</param>
     /// <returns>A validated password string.</returns>
     public static string GetValidatedPassword(
-     string prompt = "[cyan]Enter password:[/]")
+     string prompt = $"[{Site.color}]Enter password:[/]")
     {
         while (true)
         {
@@ -109,7 +109,7 @@ public class UserView
     /// <returns>The confirmed password string.</returns>
     public static string GetConfirmedPassword(
     string expectedPassword,
-    string prompt = "[cyan]Confirm password:[/]")
+    string prompt = $"[{Site.color}]Confirm password:[/]")
     {
         while (true)
         {
@@ -127,7 +127,7 @@ public class UserView
 
 
     public static string GetSecretInput(
-    string prompt = $"[cyan]{UserPrompts.GetPassword}[/]")
+    string prompt = $"[{Site.color}]{UserPrompts.GetPassword}[/]")
     {
         while (true)
         {
@@ -148,7 +148,7 @@ public class UserView
     /// </summary>
     /// <param name="prompt">The prompt message displayed to the user.</param>
     /// <returns>A validated, trimmed PIN code string.</returns>
-    public static string GetValidatedPincode(string prompt = $"[cyan]{UserPrompts.GetPincode}[/]")
+    public static string GetValidatedPincode(string prompt = $"[{Site.color}]{UserPrompts.GetPincode}[/]")
     {
         IO.PrintEmptyLine();
 
@@ -178,7 +178,7 @@ public class UserView
     /// </summary>
     /// <param name="prompt">The prompt message displayed to the user.</param>
     /// <returns>A validated, trimmed name string.</returns>
-    public static string GetValidName(string prompt = $"[cyan]{UserPrompts.GetName}[/]")
+    public static string GetValidName(string prompt = $"[{Site.color}]{UserPrompts.GetName}[/]")
     {
         IO.PrintEmptyLine();
 
@@ -207,7 +207,7 @@ public class UserView
     /// Prompts for and validates Address Line 1.
     /// </summary>
     /// <returns>A validated address string.</returns>
-    public static string GetValidAddress(string prompt = $"[cyan]{UserPrompts.GetAddress}[/]")
+    public static string GetValidAddress(string prompt = $"[{Site.color}]{UserPrompts.GetAddress}[/]")
     {
         IO.PrintEmptyLine();
 

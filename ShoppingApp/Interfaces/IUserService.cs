@@ -13,7 +13,7 @@ public interface IUserService
     /// <param name="password">The password for the user account.</param>
     /// <param name="address">The address information of the user.</param>
     /// <returns>True if the registration was successful; otherwise, false.</returns>
-    bool RegisterUser(string name, string email, string phoneNumber, string password, Address address);
+    bool RegisterUser(string name, string email, string phoneNumber, string password, Address? address);
 
     /// <summary>
     /// Authenticates a user using their email address and password.
@@ -22,4 +22,7 @@ public interface IUserService
     /// <param name="password">The password of the user.</param>
     /// <returns>The authenticated user if the credentials are valid; otherwise, null.</returns>
     User? Login(string email, string password);
+
+    void UpdateUser(User user);
+
 }

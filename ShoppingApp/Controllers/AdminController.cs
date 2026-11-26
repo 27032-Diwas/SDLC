@@ -91,7 +91,7 @@ public class AdminController(IProductService productService, IOrderService order
 
     private void SearchByName()
     {
-        string keyword = IO.GetStringInput("[cyan]Enter product name:[/]");
+        string keyword = IO.GetStringInput($"[{Site.color}]Enter product name:[/]");
 
         List<Product> products = productService.SearchByName(keyword);
 
@@ -108,7 +108,7 @@ public class AdminController(IProductService productService, IOrderService order
 
         string selectedCategory =
             IO.ShowSelectionMenu(
-                "[cyan]Select Category:[/]",
+                $"[{Site.color}]Select Category:[/]",
                 categories, 10);
 
         if (selectedCategory == "Back")
@@ -124,9 +124,9 @@ public class AdminController(IProductService productService, IOrderService order
 
     private void SearchByPriceRange()
     {
-        decimal minPrice = IO.GetIntInput("[cyan]Enter minimum price:[/]");
+        decimal minPrice = IO.GetIntInput($"[{Site.color}]Enter minimum price:[/]");
 
-        decimal maxPrice = IO.GetIntInput("[cyan]Enter maximum price:[/]");
+        decimal maxPrice = IO.GetIntInput($"[{Site.color}]Enter maximum price:[/]");
 
         List<Product> products =
             productService.SearchByPriceRange(
@@ -153,7 +153,7 @@ public class AdminController(IProductService productService, IOrderService order
 
             string selectedProductName =
                 IO.ShowSelectionMenu(
-                    "[bold cyan]Select a product:[/]",
+                    $"[{Site.color}]Select a product:[/]",
                     products
                         .Select(product => product.Name)
                         .Append("Back")
@@ -182,23 +182,23 @@ public class AdminController(IProductService productService, IOrderService order
             product.Name);
 
         IO.PrintInConsole(
-            $"[cyan]Description:[/] {product.Description}");
+            $"[{Site.color}]Description:[/] {product.Description}");
 
         IO.PrintInConsole(
-            $"[cyan]Category:[/] [green]{product.Category}[/]");
+            $"[{Site.color}]Category:[/] [green]{product.Category}[/]");
 
         IO.PrintInConsole(
-            $"[cyan]Price:[/] [green]Rs.{product.Price}[/]");
+            $"[{Site.color}]Price:[/] [green]Rs.{product.Price}[/]");
 
         if (product.Stock == 0)
         {
             IO.PrintInConsole(
-            $"[cyan]Stock:[/] [red] Out of stock [/]");
+            $"[{Site.color}]Stock:[/] [red] Out of stock [/]");
         }
         else
         {
             IO.PrintInConsole(
-                $"[cyan]Stock:[/] [green]{product.Stock}[/]");
+                $"[{Site.color}]Stock:[/] [green]{product.Stock}[/]");
         }
 
         IO.WaitInConsole();
@@ -208,15 +208,15 @@ public class AdminController(IProductService productService, IOrderService order
     {
         IO.ShowHeader("ADD PRODUCT");
 
-        string name = IO.GetStringInput("[cyan]Product Name:[/]");
+        string name = IO.GetStringInput($"[{Site.color}]Product Name:[/]");
 
-        string description = IO.GetStringInput("[cyan]Description:[/]");
+        string description = IO.GetStringInput($"[{Site.color}]Description:[/]");
 
-        string category = IO.GetStringInput("[cyan]Category:[/]");
+        string category = IO.GetStringInput($"[{Site.color}]Category:[/]");
 
-        decimal price = IO.GetIntInput("[cyan]Price:[/]");
+        decimal price = IO.GetIntInput($"[{Site.color}]Price:[/]");
 
-        int stock = IO.GetIntInput("[cyan]Stock:[/]");
+        int stock = IO.GetIntInput($"[{Site.color}]Stock:[/]");
 
         Product product = new()
         {

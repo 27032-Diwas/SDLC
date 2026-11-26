@@ -1,4 +1,5 @@
-﻿using ShoppingApp.Interfaces;
+﻿using ShoppingApp.Constants;
+using ShoppingApp.Interfaces;
 using ShoppingApp.Models;
 using ShoppingApp.Services;
 using ShoppingApp.View;
@@ -10,7 +11,8 @@ public class CartController(
     ICartService cartService,
     IOrderService orderService,
     IInvoiceService invoiceService,
-    IInvoicePdfService invoicePdfService)
+    IInvoicePdfService invoicePdfService,
+    IUserService userService)
 {
     public void Start(User user)
     {
@@ -143,6 +145,19 @@ public class CartController(
             return;
         }
 
+        if (user.Address == null)
+        {
+            IO.PrintInConsole(
+                "[yellow]Delivery address required.[/]");
+
+            Address address =
+                this.GetAddress();
+
+            user.Address = address;
+
+            userService.UpdateUser(user);
+        }
+
         Order order =
             orderService.Checkout(
                 user.UserId);
@@ -156,13 +171,45 @@ public class CartController(
             invoice);
 
         string pdfPath =
-        invoicePdfService
-            .GenerateInvoicePdf(
-                invoice);
+            invoicePdfService
+                .GenerateInvoicePdf(
+                    invoice);
 
         IO.PrintSuccessMessage(
             $"Invoice PDF generated successfully.\nLocation: {pdfPath}");
+    }
 
-        //IO.WaitInConsole();
+    private Address GetAddress()
+    {
+        string houseNo =
+            UserView.GetValidAddress();
+
+        string selectedState =
+            IO.ShowSelectionMenu(
+                "Select State",
+                StateDistrictData
+                    .StatesAndDistricts
+                    .Keys
+                    .ToArray());
+
+        IO.PrintInConsole($"[{Site.color}]State:[/] [green]{selectedState}[/]");
+
+        string selectedDistrict =
+            IO.ShowSelectionMenu(
+                "Select District",
+                StateDistrictData
+                    .StatesAndDistricts[selectedState]
+                    .ToArray());
+
+        IO.PrintInConsole($"[{Site.color}]District:[/] [green]{selectedDistrict}[/]");
+
+        string pinCode =
+            UserView.GetValidatedPincode();
+
+        return new Address(
+            houseNo,
+            selectedDistrict,
+            selectedState,
+            pinCode);
     }
 }

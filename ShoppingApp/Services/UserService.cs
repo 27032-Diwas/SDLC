@@ -17,7 +17,7 @@ public class UserService : IUserService
         string email,
         string phoneNumber,
         string password,
-        Address address)
+        Address? address)
     {
         User? existingUser =
             this.userRepository.GetUserByEmail(email);
@@ -50,5 +50,10 @@ public class UserService : IUserService
         return user.Password == password
             ? user
             : null;
+    }
+
+    public void UpdateUser(User user)
+    {
+        userRepository.UpdateUser(user);
     }
 }

@@ -1,4 +1,6 @@
-﻿using ShoppingApp.Models;
+﻿using ShoppingApp.Constants;
+using ShoppingApp.Interfaces;
+using ShoppingApp.Models;
 using ShoppingApp.Services;
 using ShoppingApp.View;
 
@@ -9,7 +11,8 @@ public class WishlistController(
     ICartService cartService,
     IOrderService orderService,
     IInvoiceService invoiceService,
-    IInvoicePdfService invoicePdfService)
+    IInvoicePdfService invoicePdfService,
+    IUserService userService)
 {
     public void Start(User user)
     {
@@ -157,6 +160,16 @@ public class WishlistController(
                     IO.GetIntInput(
                         $"Enter quantity (Max {product.Stock})");
 
+            if (user.Address == null)
+            {
+                Address address =
+                    this.GetAddress();
+
+                user.Address = address;
+
+                userService.UpdateUser(user);
+            }
+
             Order order =
                 orderService.PlaceDirectOrder(
                     user.UserId,
@@ -196,5 +209,35 @@ public class WishlistController(
 
         IO.PrintSuccessMessage(
             "Removed from wishlist.");
+    }
+
+    private Address GetAddress()
+    {
+        string houseNo =
+            UserView.GetValidAddress();
+
+        string selectedState =
+            IO.ShowSelectionMenu(
+                "Select State",
+                StateDistrictData
+                    .StatesAndDistricts
+                    .Keys
+                    .ToArray());
+
+        string selectedDistrict =
+            IO.ShowSelectionMenu(
+                "Select District",
+                StateDistrictData
+                    .StatesAndDistricts[selectedState]
+                    .ToArray());
+
+        string pinCode =
+            UserView.GetValidatedPincode();
+
+        return new Address(
+            houseNo,
+            selectedDistrict,
+            selectedState,
+            pinCode);
     }
 }

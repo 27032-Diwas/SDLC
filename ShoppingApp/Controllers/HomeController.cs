@@ -7,6 +7,7 @@ namespace ShoppingApp.Controllers;
 
 public class HomeController(
     User user,
+    IUserService userService,
     IProductService productService,
     ICartService cartService,
     IOrderService orderService,
@@ -16,6 +17,7 @@ public class HomeController(
 {
     private readonly ProductController productController = new ProductController(
                         user,
+                        userService,
                         productService,
                         cartService,
                         wishlistService,
@@ -23,13 +25,14 @@ public class HomeController(
                         invoiceService,
                         invoicePdfService);
 
-    private readonly WishlistController wishlistController = new WishlistController(wishlistService, cartService, orderService, invoiceService, invoicePdfService);
+    private readonly WishlistController wishlistController = new WishlistController(wishlistService, cartService, orderService, invoiceService, invoicePdfService, userService);
     private readonly CartController cartController = new CartController(
                         productService,
                         cartService,
                         orderService,
                         invoiceService,
-                        invoicePdfService);
+                        invoicePdfService,
+                        userService);
 
     private readonly OrderController orderController = new OrderController(orderService);
 

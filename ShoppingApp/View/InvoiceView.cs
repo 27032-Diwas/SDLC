@@ -1,4 +1,5 @@
-﻿using ShoppingApp.Models;
+﻿using ShoppingApp.Constants;
+using ShoppingApp.Models;
 using Spectre.Console;
 
 namespace ShoppingApp.View;
@@ -9,9 +10,9 @@ public static class InvoiceView
         Invoice invoice)
     {
         IO.ShowHeader("INVOICE");
-        IO.PrintInConsole($"[cyan]Invoice Number:[/] {invoice.InvoiceId}");
-        IO.PrintInConsole($"[cyan]Customer:[/] {invoice.CustomerName}");
-        IO.PrintInConsole($"[cyan]Date:[/] {invoice.InvoiceDate}");
+        IO.PrintInConsole($"[{Site.color}]Invoice Number:[/] {invoice.InvoiceId}");
+        IO.PrintInConsole($"[{Site.color}]Customer:[/] {invoice.CustomerName}");
+        IO.PrintInConsole($"[{Site.color}]Date:[/] {invoice.InvoiceDate}");
         IO.PrintEmptyLine();
 
         Table table = new();

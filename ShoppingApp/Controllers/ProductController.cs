@@ -1,4 +1,5 @@
-﻿using ShoppingApp.Interfaces;
+﻿using ShoppingApp.Constants;
+using ShoppingApp.Interfaces;
 using ShoppingApp.Models;
 using ShoppingApp.Services;
 using ShoppingApp.View;
@@ -7,6 +8,7 @@ namespace ShoppingApp.Controllers;
 
 public class ProductController(
     User user,
+    IUserService userService,
     IProductService productService,
     ICartService cartService,
     IWishlistService wishlistService,
@@ -24,7 +26,7 @@ public class ProductController(
 
     public void SearchByName()
     {
-        string keyword = IO.GetStringInput("[cyan]Enter product name:[/]");
+        string keyword = IO.GetStringInput($"[{Site.color}]Enter product name:[/]");
 
         List<Product> products = productService.SearchByName(keyword);
 
@@ -41,7 +43,7 @@ public class ProductController(
 
         string selectedCategory =
             IO.ShowSelectionMenu(
-                "[cyan]Select Category:[/]",
+                $"[{Site.color}]Select Category:[/]",
                 categories, 10);
 
         if (selectedCategory == "Back")
@@ -57,9 +59,9 @@ public class ProductController(
 
     public void SearchByPriceRange()
     {
-        decimal minPrice = IO.GetIntInput("[cyan]Enter minimum price:[/]");
+        decimal minPrice = IO.GetIntInput($"[{Site.color}]Enter minimum price:[/]");
 
-        decimal maxPrice = IO.GetIntInput("[cyan]Enter maximum price:[/]");
+        decimal maxPrice = IO.GetIntInput($"[{Site.color}]Enter maximum price:[/]");
 
         List<Product> products =
             productService.SearchByPriceRange(
@@ -86,7 +88,7 @@ public class ProductController(
 
             string selectedProductName =
                 IO.ShowSelectionMenu(
-                    "[bold cyan]Select a product:[/]",
+                    $"[{Site.color}]Select a product:[/]",
                     products
                         .Select(product => product.Name)
                         .Append("Back")
@@ -114,17 +116,19 @@ public class ProductController(
         string choice;
         while (true)
         {
+            product = productService.GetProductById(product.ProductId)!;
+
             IO.ShowHeader(
                 product.Name);
 
             IO.PrintInConsole(
-                $"[cyan]Description:[/] {product.Description}");
+                $"[{Site.color}]Description:[/] {product.Description}");
 
             IO.PrintInConsole(
-                $"[cyan]Category:[/] [green]{product.Category}[/]");
+                $"[{Site.color}]Category:[/] [green]{product.Category}[/]");
 
             IO.PrintInConsole(
-                $"[cyan]Price:[/] [green]Rs.{product.Price}[/]");
+                $"[{Site.color}]Price:[/] [green]Rs.{product.Price}[/]");
 
             Cart cart = cartService.GetCart(user.UserId);
 
@@ -132,17 +136,17 @@ public class ProductController(
 
             if (cartItem != null)
             {
-                IO.PrintInConsole($"[cyan]In Cart:[/] [yellow]{cartItem.Quantity} item(s)[/]");
+                IO.PrintInConsole($"[{Site.color}]In Cart:[/] [yellow]{cartItem.Quantity} item(s)[/]");
             }
 
             if (product.Stock == 0)
             {
                 IO.PrintInConsole(
-                $"[cyan]Stock:[/] [red] Out of stock [/]");
+                $"[{Site.color}]Stock:[/] [red] Out of stock [/]");
 
                 choice =
                     IO.ShowSelectionMenu(
-                        "[bold cyan]Choose an action:[/]",
+                        $"[{Site.color}]Choose an action:[/]",
                         [
                         "Add To Wishlist",
                         "Back"
@@ -151,11 +155,11 @@ public class ProductController(
             else
             {
                 IO.PrintInConsole(
-                    $"[cyan]Stock:[/] [green]{product.Stock}[/]");
+                    $"[{Site.color}]Stock:[/] [green]{product.Stock}[/]");
 
                 choice =
                     IO.ShowSelectionMenu(
-                        "[bold cyan]Choose an action:[/]",
+                        $"[{Site.color}]Choose an action:[/]",
                         [
                             "Buy Now",
                             "Add To Cart",
@@ -188,6 +192,16 @@ public class ProductController(
         try
         {
             int quantity = IO.GetIntInput($"Enter quantity (Max {product.Stock})");
+
+            if (user.Address == null)
+            {
+                Address address =
+                    this.GetAddress();
+
+                user.Address = address;
+
+                userService.UpdateUser(user);
+            }
 
             Order order =
                 orderService.PlaceDirectOrder(
@@ -274,5 +288,39 @@ public class ProductController(
             IO.PrintInvalidMessage(
                 exception.Message);
         }
+    }
+
+    private Address GetAddress()
+    {
+        string houseNo =
+            UserView.GetValidAddress();
+
+        string selectedState =
+            IO.ShowSelectionMenu(
+                "Select State",
+                StateDistrictData
+                    .StatesAndDistricts
+                    .Keys
+                    .ToArray());
+
+        IO.PrintInConsole($"[{Site.color}]State:[/] [green]{selectedState}[/]");
+
+        string selectedDistrict =
+            IO.ShowSelectionMenu(
+                "Select District",
+                StateDistrictData
+                    .StatesAndDistricts[selectedState]
+                    .ToArray());
+
+        IO.PrintInConsole($"[{Site.color}]District:[/] [green]{selectedDistrict}[/]");
+
+        string pinCode =
+            UserView.GetValidatedPincode();
+
+        return new Address(
+            houseNo,
+            selectedDistrict,
+            selectedState,
+            pinCode);
     }
 }

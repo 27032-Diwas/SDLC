@@ -26,7 +26,7 @@ public class User
         string email,
         string mobileNumber,
         string password,
-        Address address)
+        Address? address)
     {
         this.UserId = userId;
         this.Name = name;
@@ -83,7 +83,7 @@ public class User
     /// <value>
     /// Address of user.
     /// </value>
-    public Address Address { get; set; }
+    public Address? Address { get; set; }
 
     public DateTime CreatedAt { get; set; }
 }

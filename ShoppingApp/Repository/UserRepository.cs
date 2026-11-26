@@ -33,6 +33,32 @@ public class UserRepository : IUserRepository
             u => u.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
     }
 
+    public void UpdateUser(User updatedUser)
+    {
+        List<User> users = this.GetAllUsers();
+
+        int index =
+            users.FindIndex(
+                user => user.UserId == updatedUser.UserId);
+
+        if (index >= 0)
+        {
+            users[index] = updatedUser;
+        }
+
+        string json =
+            JsonSerializer.Serialize(
+                users,
+                new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+        File.WriteAllText(
+            filePath,
+            json);
+    }
+
     private List<User> GetAllUsers()
     {
         if (!File.Exists(this.filePath))

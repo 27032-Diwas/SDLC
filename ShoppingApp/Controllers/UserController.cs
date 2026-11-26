@@ -53,7 +53,7 @@ public class UserController
         {
             IO.ShowHeader("AUTHENTICATION");
             string choice = IO.ShowSelectionMenu(
-                "[bold cyan]Select an option using Up/Down arrow keys:[/]",
+                $"[{Site.color}]Select an option using Up/Down arrow keys:[/]",
                 new[] { Configurables.SignUp, Configurables.LogIn, Configurables.Exit });
             switch (choice)
             {
@@ -80,28 +80,28 @@ public class UserController
         string phoneNumber = UserView.GetValidatedPhoneNumber();
         string password = UserView.GetValidatedPassword();
         string confirmPassword = UserView.GetConfirmedPassword(password);
-        string houseNo = UserView.GetValidAddress();
+        //string houseNo = UserView.GetValidAddress();
 
 
-        string selectedState = IO.ShowSelectionMenu(
-            "Select State",
-            StateDistrictData.StatesAndDistricts.Keys.ToArray());
+        //string selectedState = IO.ShowSelectionMenu(
+        //    "Select State",
+        //    StateDistrictData.StatesAndDistricts.Keys.ToArray());
 
-        IO.PrintInConsole($"[cyan]State:[/] [green]{selectedState}[/]");
-        string selectedDistrict = IO.ShowSelectionMenu(
-            "Select District",
-            StateDistrictData.StatesAndDistricts[selectedState].ToArray());
-        IO.PrintInConsole($"[cyan]District:[/] [green]{selectedDistrict}[/]");
-        string pinCode = UserView.GetValidatedPincode();
+        //IO.PrintInConsole($"[cyan]State:[/] [green]{selectedState}[/]");
+        //string selectedDistrict = IO.ShowSelectionMenu(
+        //    "Select District",
+        //    StateDistrictData.StatesAndDistricts[selectedState].ToArray());
+        //IO.PrintInConsole($"[cyan]District:[/] [green]{selectedDistrict}[/]");
+        //string pinCode = UserView.GetValidatedPincode();
 
-        Address address = new Address(houseNo, selectedDistrict, selectedState, pinCode);
+        //Address address = new Address(houseNo, selectedDistrict, selectedState, pinCode);
 
         bool result = this.userService.RegisterUser(
             Name,
             email,
             phoneNumber,
             password,
-            address);
+            null);
 
         if (result)
         {
@@ -147,6 +147,7 @@ public class UserController
 
         HomeController homeController = new HomeController(
         user,
+        this.userService,
         this.productService,
         this.cartService,
         this.orderService,
