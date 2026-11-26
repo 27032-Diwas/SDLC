@@ -1,12 +1,16 @@
-﻿using ShoppingApp.Models;
+﻿using ShoppingApp.Interfaces;
+using ShoppingApp.Models;
 using ShoppingApp.Services;
 using ShoppingApp.View;
 
 namespace ShoppingApp.Controllers;
 
 public class CartController(
+    IProductService productService,
     ICartService cartService,
-    IOrderService orderService, IInvoiceService invoiceService, IInvoicePdfService invoicePdfService)
+    IOrderService orderService,
+    IInvoiceService invoiceService,
+    IInvoicePdfService invoicePdfService)
 {
     public void Start(User user)
     {
@@ -57,33 +61,53 @@ public class CartController(
     }
 
     private void UpdateQuantity(
-        User user,
-        Cart cart)
+    User user,
+    Cart cart)
     {
-        string selectedProduct =
-            IO.ShowSelectionMenu(
-                "Select Product",
-                cart.Items
-                    .Select(item => item.ProductName)
-                    .ToArray());
+        try
+        {
+            string selectedProduct =
+                IO.ShowSelectionMenu(
+                    "Select Product",
+                    cart.Items
+                        .Select(item => item.ProductName)
+                        .ToArray());
 
-        CartItem item =
-            cart.Items.First(
-                item => item.ProductName == selectedProduct);
+            CartItem item =
+                cart.Items.First(
+                    item => item.ProductName == selectedProduct);
 
-        int quantity =
-            int.Parse(
-                IO.GetStringInput(
-                    "Enter new quantity"));
+            Product? product =
+                productService.GetProductById(
+                    item.ProductId);
 
-        cartService.UpdateQuantity(
-            user.UserId,
-            item.ProductId,
-            quantity);
+            if (product == null)
+            {
+                IO.PrintInvalidMessage(
+                    "Product not found.");
 
-        IO.PrintSuccessMessage(
-            "Quantity updated successfully.");
+                return;
+            }
+
+            int quantity =
+                IO.GetIntInput(
+                    $"Enter new quantity (Available Stock: {product.Stock})");
+
+            cartService.UpdateQuantity(
+                user.UserId,
+                item.ProductId,
+                quantity);
+
+            IO.PrintSuccessMessage(
+                "Quantity updated successfully.");
+        }
+        catch (InvalidOperationException ex)
+        {
+            IO.PrintInvalidMessage(
+                ex.Message);
+        }
     }
+
 
     private void RemoveProduct(
         User user,

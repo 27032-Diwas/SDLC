@@ -20,8 +20,7 @@ public class OrderController(
 
             if (!orders.Any())
             {
-                IO.PrintInvalidMessage(
-                    "No orders found.");
+                IO.PrintInvalidMessage("No orders found.");
 
                 return;
             }
@@ -156,8 +155,7 @@ public class OrderController(
 
                 if (order.Status == "Returned")
                 {
-                    IO.PrintInvalidMessage(
-                        "Order already returned.");
+                    IO.PrintInvalidMessage("Order already returned.");
 
                     return;
                 }
@@ -168,13 +166,11 @@ public class OrderController(
 
                 if (result)
                 {
-                    IO.PrintSuccessMessage(
-                        "Order returned successfully.");
+                    IO.PrintSuccessMessage("Order returned successfully.");
                 }
                 else
                 {
-                    IO.PrintInvalidMessage(
-                        "Unable to return order.");
+                    IO.PrintInvalidMessage("Unable to return order.");
                 }
 
                 break;

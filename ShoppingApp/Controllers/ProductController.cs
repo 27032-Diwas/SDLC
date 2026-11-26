@@ -25,11 +25,9 @@ public class ProductController(
     public void SearchByName()
     {
         string keyword =
-            IO.GetStringInput(
-                "[cyan]Enter product name:[/]");
+            IO.GetStringInput("[cyan]Enter product name:[/]");
 
-        List<Product> products =
-            productService.SearchByName(keyword);
+        List<Product> products = productService.SearchByName(keyword);
 
         this.DisplayProducts(products);
     }
@@ -60,15 +58,9 @@ public class ProductController(
 
     public void SearchByPriceRange()
     {
-        decimal minPrice =
-            decimal.Parse(
-                IO.GetStringInput(
-                    "[cyan]Enter minimum price:[/]"));
+        decimal minPrice = IO.GetIntInput("[cyan]Enter minimum price:[/]");
 
-        decimal maxPrice =
-            decimal.Parse(
-                IO.GetStringInput(
-                    "[cyan]Enter maximum price:[/]"));
+        decimal maxPrice = IO.GetIntInput("[cyan]Enter maximum price:[/]");
 
         List<Product> products =
             productService.SearchByPriceRange(
@@ -186,10 +178,7 @@ public class ProductController(
     {
         try
         {
-            int quantity =
-                int.Parse(
-                    IO.GetStringInput(
-                        $"Enter quantity (Max {product.Stock})"));
+            int quantity = IO.GetIntInput($"Enter quantity (Max {product.Stock})");
 
             Order order =
                 orderService.PlaceDirectOrder(
@@ -225,9 +214,8 @@ public class ProductController(
         try
         {
             int quantity =
-                int.Parse(
-                    IO.GetStringInput(
-                        $"Enter quantity (Max: {product.Stock}): "));
+                    IO.GetIntInput(
+                        $"Enter quantity (Max: {product.Stock}): ");
 
             if (quantity <= 0)
             {

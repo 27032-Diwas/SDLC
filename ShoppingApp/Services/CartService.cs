@@ -92,8 +92,7 @@ public class CartService(
 
         if (quantity > product.Stock)
         {
-            throw new Exception(
-                "Quantity exceeds stock.");
+            throw new InvalidOperationException($"Only {product.Stock} item(s) available in stock.");
         }
 
         item.Quantity = quantity;

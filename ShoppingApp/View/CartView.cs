@@ -21,14 +21,13 @@ public static class CartView
         {
             table.AddRow(
                 item.ProductName,
-                $"₹ {item.UnitPrice}",
+                $"Rs. {item.UnitPrice}",
                 item.Quantity.ToString(),
-                $"₹ {item.TotalPrice}");
+                $"Rs. {item.TotalPrice}");
         }
 
         AnsiConsole.Write(table);
 
-        IO.PrintInConsole(
-            $"[bold green]Cart Total : ₹ {cart.CartTotal}[/]");
+        IO.PrintInConsole($"[bold green]Cart Total : Rs. {cart.CartTotal}[/]");
     }
 }

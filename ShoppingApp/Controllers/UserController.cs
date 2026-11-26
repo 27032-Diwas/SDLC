@@ -51,7 +51,7 @@ public class UserController
     {
         while (true)
         {
-            IO.ShowHeader("AUTHENTICATION", "SHOPPING APP");
+            IO.ShowHeader("AUTHENTICATION");
             string choice = IO.ShowSelectionMenu(
                 "[bold cyan]Select an option using Up/Down arrow keys:[/]",
                 new[] { Configurables.SignUp, Configurables.LogIn, Configurables.Exit });
@@ -74,7 +74,7 @@ public class UserController
 
     public void HandleSignUp()
     {
-        IO.ShowHeader("SIGN UP", "SHOPPING APP");
+        IO.ShowHeader("SIGN UP");
         string Name = UserView.GetValidName();
         string email = UserView.GetValidatedEmail();
         string phoneNumber = UserView.GetValidatedPhoneNumber();
@@ -111,7 +111,7 @@ public class UserController
 
     public void HandleLogin()
     {
-        IO.ShowHeader("LOGIN", "SHOPPING APP");
+        IO.ShowHeader("LOGIN");
 
         string email = UserView.GetValidatedEmail();
         string password = UserView.GetSecretInput();

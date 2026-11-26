@@ -5,7 +5,11 @@ using ShoppingApp.View;
 namespace ShoppingApp.Controllers;
 
 public class WishlistController(
-    IWishlistService wishlistService)
+    IWishlistService wishlistService,
+    ICartService cartService,
+    IOrderService orderService,
+    IInvoiceService invoiceService,
+    IInvoicePdfService invoicePdfService)
 {
     public void Start(User user)
     {
@@ -27,43 +31,151 @@ public class WishlistController(
 
             ProductView.DisplayProducts(products);
 
-            string choice =
+            string selectedProduct =
                 IO.ShowSelectionMenu(
-                    "Choose an option",
-                    [
-                        "Remove Product",
-                        "Back"
-                    ]);
+                    "Select Product",
+                    products
+                        .Select(product => product.Name)
+                        .Append("Back")
+                        .ToArray());
 
-            switch (choice)
+            if (selectedProduct == "Back")
             {
-                case "Remove Product":
-                    this.RemoveFromWishlist(
-                        user,
-                        products);
-                    break;
-
-                case "Back":
-                    return;
+                return;
             }
+
+            Product product =
+                products.First(
+                    p => p.Name == selectedProduct);
+
+            this.ShowProductActions(
+                user,
+                product);
+        }
+    }
+
+    private void ShowProductActions(
+        User user,
+        Product product)
+    {
+        string choice;
+        if (product.Stock == 0)
+        {
+            choice =
+            IO.ShowSelectionMenu(
+                "Choose Action",
+                [
+                    "Add To Cart",
+                    "Remove From Wishlist",
+                    "Back"
+                ]);
+        }
+        else
+        {
+            choice =
+                IO.ShowSelectionMenu(
+                    "Choose Action",
+                    [
+                        "Add To Cart",
+                    "Buy Now",
+                    "Remove From Wishlist",
+                    "Back"
+                    ], 4);
+        }
+
+        switch (choice)
+        {
+            case "Add To Cart":
+                this.AddToCart(
+                    user,
+                    product);
+                break;
+
+            case "Buy Now":
+                this.BuyNow(
+                    user,
+                    product);
+                break;
+
+            case "Remove From Wishlist":
+                this.RemoveFromWishlist(
+                    user,
+                    product);
+                break;
+
+            case "Back":
+                return;
+        }
+    }
+
+    private void AddToCart(
+        User user,
+        Product product)
+    {
+        try
+        {
+            int quantity =
+                    IO.GetIntInput(
+                        $"Enter quantity (Max {product.Stock})");
+
+            cartService.AddToCart(
+                user.UserId,
+                product.ProductId,
+                quantity);
+
+            IO.PrintSuccessMessage(
+                "Product moved to cart.");
+        }
+        catch (Exception exception)
+        {
+            IO.PrintInvalidMessage(
+                exception.Message);
+        }
+    }
+
+    private void BuyNow(
+        User user,
+        Product product)
+    {
+        try
+        {
+            int quantity =
+                    IO.GetIntInput(
+                        $"Enter quantity (Max {product.Stock})");
+
+            Order order =
+                orderService.PlaceDirectOrder(
+                    user.UserId,
+                    product.ProductId,
+                    quantity);
+
+            Invoice invoice =
+                invoiceService.GenerateInvoice(
+                    order,
+                    user);
+
+            InvoiceView.DisplayInvoice(
+                invoice);
+
+            string pdfPath =
+                invoicePdfService
+                    .GenerateInvoicePdf(
+                        invoice);
+
+            IO.PrintSuccessMessage(
+                $"Order placed successfully.\nInvoice saved at:\n{pdfPath}");
+        }
+        catch (Exception exception)
+        {
+            IO.PrintInvalidMessage(
+                exception.Message);
         }
     }
 
     private void RemoveFromWishlist(
         User user,
-        List<Product> products)
+        Product product)
     {
-        string selectedProduct =
-            IO.ShowSelectionMenu(
-                "Select Product",
-                products
-                    .Select(product => product.Name)
-                    .ToArray());
-
-        Product product =
-            products.First(
-                x => x.Name == selectedProduct);
-
         wishlistService.RemoveFromWishlist(
             user.UserId,
             product.ProductId);

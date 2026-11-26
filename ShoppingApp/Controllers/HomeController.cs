@@ -14,12 +14,30 @@ public class HomeController(
     IInvoiceService invoiceService,
     IInvoicePdfService invoicePdfService)
 {
+    private readonly ProductController productController = new ProductController(
+                        user,
+                        productService,
+                        cartService,
+                        wishlistService,
+                        orderService,
+                        invoiceService,
+                        invoicePdfService);
+
+    private readonly WishlistController wishlistController = new WishlistController(wishlistService, cartService, orderService, invoiceService, invoicePdfService);
+    private readonly CartController cartController = new CartController(
+                        productService,
+                        cartService,
+                        orderService,
+                        invoiceService,
+                        invoicePdfService);
+
+    private readonly OrderController orderController = new OrderController(orderService);
+
     public void Start()
     {
         while (true)
         {
-            IO.ShowHeader(
-                $"WELCOME {user.Name.ToUpper()}", "SHOPPING APP");
+            IO.ShowHeader($"WELCOME {user.Name.ToUpper()}");
 
             string choice = IO.ShowSelectionMenu(
                 "Choose an option",
@@ -33,76 +51,36 @@ public class HomeController(
                     "Order History",
                     "Logout",
                     "Exit"
-                ],9);
+                ], 9);
 
             switch (choice)
             {
                 case "View Products":
-                    new ProductController(
-                        user,
-                        productService,
-                        cartService,
-                        wishlistService,
-                        orderService,
-                        invoiceService,
-                        invoicePdfService)
-                        .ShowAllProducts();
+                    productController.ShowAllProducts();
                     break;
 
                 case "Search By Name":
-                    new ProductController(
-                        user,
-                        productService,
-                        cartService,
-                        wishlistService,
-                        orderService,
-                        invoiceService,
-                        invoicePdfService)
-                        .SearchByName();
+                    productController.SearchByName();
                     break;
 
                 case "Search By Category":
-                    new ProductController(
-                        user,
-                        productService,
-                        cartService,
-                        wishlistService,
-                        orderService,
-                        invoiceService,
-                        invoicePdfService)
-                        .SearchByCategory();
+                    productController.SearchByCategory();
                     break;
 
                 case "Search By Price Range":
-                    new ProductController(
-                        user,
-                        productService,
-                        cartService,
-                        wishlistService,
-                        orderService,
-                        invoiceService,
-                        invoicePdfService)
-                        .SearchByPriceRange();
+                    productController.SearchByPriceRange();
                     break;
 
                 case "View Cart":
-                    new CartController(
-                        cartService,
-                        orderService,
-                        invoiceService,
-                        invoicePdfService)
-                        .Start(user);
+                    cartController.Start(user);
                     break;
 
                 case "Wishlist":
-                    new WishlistController(
-                        wishlistService)
-                        .Start(user);
+                    wishlistController.Start(user);
                     break;
 
                 case "Order History":
-                    new OrderController(orderService)
-                        .Start(user);
+                    orderController.Start(user);
                     break;
 
                 case "Logout":

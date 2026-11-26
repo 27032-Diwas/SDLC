@@ -9,26 +9,16 @@ public static class InvoiceView
         Invoice invoice)
     {
         IO.ShowHeader("INVOICE");
-
-        IO.PrintInConsole(
-            $"[cyan]Invoice Number:[/] {invoice.InvoiceId}");
-
-        IO.PrintInConsole(
-            $"[cyan]Customer:[/] {invoice.CustomerName}");
-
-        IO.PrintInConsole(
-            $"[cyan]Date:[/] {invoice.InvoiceDate}");
-
+        IO.PrintInConsole($"[cyan]Invoice Number:[/] {invoice.InvoiceId}");
+        IO.PrintInConsole($"[cyan]Customer:[/] {invoice.CustomerName}");
+        IO.PrintInConsole($"[cyan]Date:[/] {invoice.InvoiceDate}");
         IO.PrintEmptyLine();
 
         Table table = new();
 
         table.AddColumn("Product");
-
         table.AddColumn("Qty");
-
         table.AddColumn("Unit Price");
-
         table.AddColumn("Total");
 
         foreach (CartItem item in invoice.Items)
@@ -36,24 +26,16 @@ public static class InvoiceView
             table.AddRow(
                 item.ProductName,
                 item.Quantity.ToString(),
-                $"₹{item.UnitPrice}",
-                $"₹{item.TotalPrice}");
+                $"Rs. {item.UnitPrice}",
+                $"Rs. {item.TotalPrice}");
         }
 
         AnsiConsole.Write(table);
 
         IO.PrintEmptyLine();
-
-        IO.PrintInConsole(
-            $"[green]Products:[/] ₹{invoice.ProductAmount}");
-
-        IO.PrintInConsole(
-            $"[yellow]Delivery:[/] ₹{invoice.DeliveryCharge}");
-
-        IO.PrintInConsole(
-            $"[red]Discount:[/] ₹{invoice.DiscountAmount}");
-
-        IO.PrintInConsole(
-            $"[bold green]Final Amount:[/] ₹{invoice.FinalAmount}");
+        IO.PrintInConsole($"[green]Products:[/] Rs. {invoice.ProductAmount}");
+        IO.PrintInConsole($"[yellow]Delivery:[/] Rs. {invoice.DeliveryCharge}");
+        IO.PrintInConsole($"[red]Discount:[/] Rs. {invoice.DiscountAmount}");
+        IO.PrintInConsole($"[bold green]Final Amount:[/] Rs. {invoice.FinalAmount}");
     }
 }

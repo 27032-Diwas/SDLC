@@ -30,6 +30,58 @@ public static class IO
     }
 
     /// <summary>
+    /// Prompts the user for a valid positive integer.
+    /// </summary>
+    /// <param name="prompt">The prompt label displayed to the user.</param>
+    /// <returns>A validated integer value.</returns>
+    public static int GetIntInput(string prompt)
+    {
+        PrintEmptyLine();
+
+        return AnsiConsole.Prompt(
+            new TextPrompt<int>(prompt)
+                .PromptStyle("green")
+                .ValidationErrorMessage(
+                    "[red]Please enter a valid whole number.[/]")
+                .Validate(value =>
+                {
+                    if (value <= 0)
+                    {
+                        return ValidationResult.Error(
+                            "[red]Value must be greater than 0.[/]");
+                    }
+
+                    return ValidationResult.Success();
+                }));
+    }
+
+    /// <summary>
+    /// Prompts the user for a valid positive decimal value.
+    /// </summary>
+    /// <param name="prompt">The prompt label displayed to the user.</param>
+    /// <returns>A validated decimal value.</returns>
+    public static decimal GetDecimalInput(string prompt)
+    {
+        PrintEmptyLine();
+
+        return AnsiConsole.Prompt(
+            new TextPrompt<decimal>(prompt)
+                .PromptStyle("green")
+                .ValidationErrorMessage(
+                    "[red]Please enter a valid amount.[/]")
+                .Validate(value =>
+                {
+                    if (value <= 0)
+                    {
+                        return ValidationResult.Error(
+                            "[red]Value must be greater than 0.[/]");
+                    }
+
+                    return ValidationResult.Success();
+                }));
+    }
+
+    /// <summary>
     /// Prompts the user for a valid date in <c>yyyy-MM-dd</c> format.
     /// </summary>
     /// <param name="prompt">The prompt label displayed to the user.</param>
@@ -98,7 +150,7 @@ public static class IO
     public static void PrintInvalidMessage(string content)
     {
         PrintEmptyLine();
-        var panel = new Panel($"[bold red]✖ {Markup.Escape(content)}[/]")
+        var panel = new Panel($"[bold red] {Markup.Escape(content)}[/]")
         {
             Border = BoxBorder.Rounded,
             BorderStyle = new Style(Color.Red),
@@ -114,7 +166,7 @@ public static class IO
     public static void PrintSuccessMessage(string content)
     {
         PrintEmptyLine();
-        var panel = new Panel($"[bold green]✔ {Markup.Escape(content)}[/]")
+        var panel = new Panel($"[bold green] {Markup.Escape(content)}[/]")
         {
             Border = BoxBorder.Rounded,
             BorderStyle = new Style(Color.Green),
@@ -136,7 +188,7 @@ public static class IO
     /// </summary>
     /// <param name="header">The section header text.</param>
     /// <param name="bannerTitle">Optional large banner text rendered above the header.</param>
-    public static void ShowHeader(string header, string bannerTitle = "SHOPPING APP")
+    public static void ShowHeader(string header, string bannerTitle = "MICROMAX")
     {
         ClearConsole();
 

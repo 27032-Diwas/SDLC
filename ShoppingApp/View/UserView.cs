@@ -81,25 +81,19 @@ public class UserView
 
             if (string.IsNullOrWhiteSpace(password))
             {
-                IO.PrintInvalidMessage(
-                    "Password cannot be empty.");
-
+                IO.PrintInvalidMessage("Password cannot be empty.");
                 continue;
             }
 
             if (password.Length < 4)
             {
-                IO.PrintInvalidMessage(
-                    "Password must be at least 4 characters long.");
-
+                IO.PrintInvalidMessage("Password must be at least 4 characters long.");
                 continue;
             }
 
             if (password.Contains(' '))
             {
-                IO.PrintInvalidMessage(
-                    "Password cannot contain spaces.");
-
+                IO.PrintInvalidMessage("Password cannot contain spaces.");
                 continue;
             }
 
@@ -119,15 +113,11 @@ public class UserView
     {
         while (true)
         {
-            string password =
-                GetMaskedPasswordInput(
-                    prompt);
+            string password =GetMaskedPasswordInput(prompt);
 
             if (password != expectedPassword)
             {
-                IO.PrintInvalidMessage(
-                    "Passwords do not match.");
-
+                IO.PrintInvalidMessage("Passwords do not match.");
                 continue;
             }
 
@@ -141,15 +131,11 @@ public class UserView
     {
         while (true)
         {
-            string password =
-                GetMaskedPasswordInput(
-                    prompt);
+            string password =GetMaskedPasswordInput(prompt);
 
             if (string.IsNullOrWhiteSpace(password))
             {
-                IO.PrintInvalidMessage(
-                    "Password cannot be empty.");
-
+                IO.PrintInvalidMessage("Password cannot be empty.");
                 continue;
             }
 
@@ -290,9 +276,7 @@ public class UserView
             {
                 if (password.Length > 0)
                 {
-                    password.Remove(
-                        password.Length - 1,
-                        1);
+                    password.Remove(password.Length - 1, 1);
 
                     Console.Write("\b \b");
                 }

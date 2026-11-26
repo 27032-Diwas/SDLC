@@ -6,9 +6,7 @@ using Spectre.Console;
 
 namespace ShoppingApp.Controllers;
 
-public class AdminController(
-    IProductService productService,
-    IOrderService orderService)
+public class AdminController(IProductService productService, IOrderService orderService)
 {
     public void Start()
     {
@@ -27,7 +25,7 @@ public class AdminController(
                         "View Orders",
                         "View Returned Orders",
                         "Logout"
-                    ],7);
+                    ], 7);
 
             switch (choice)
             {
@@ -64,12 +62,8 @@ public class AdminController(
     private void ViewProducts()
     {
         IO.ShowHeader("PRODUCTS");
-
-        List<Product> products =
-            productService.GetAllProducts();
-
+        List<Product> products = productService.GetAllProducts();
         ProductView.DisplayProducts(products);
-
         IO.WaitInConsole();
     }
 
@@ -77,27 +71,15 @@ public class AdminController(
     {
         IO.ShowHeader("ADD PRODUCT");
 
-        string name =
-            IO.GetStringInput(
-                "[cyan]Product Name:[/]");
+        string name = IO.GetStringInput("[cyan]Product Name:[/]");
 
-        string description =
-            IO.GetStringInput(
-                "[cyan]Description:[/]");
+        string description = IO.GetStringInput("[cyan]Description:[/]");
 
-        string category =
-            IO.GetStringInput(
-                "[cyan]Category:[/]");
+        string category = IO.GetStringInput("[cyan]Category:[/]");
 
-        decimal price =
-            decimal.Parse(
-                IO.GetStringInput(
-                    "[cyan]Price:[/]"));
+        decimal price = IO.GetIntInput("[cyan]Price:[/]");
 
-        int stock =
-            int.Parse(
-                IO.GetStringInput(
-                    "[cyan]Stock:[/]"));
+        int stock = IO.GetIntInput("[cyan]Stock:[/]");
 
         Product product = new()
         {
@@ -111,16 +93,14 @@ public class AdminController(
 
         productService.AddProduct(product);
 
-        IO.PrintSuccessMessage(
-            "Product added successfully.");
+        IO.PrintSuccessMessage("Product added successfully.");
     }
 
     private void EditProduct()
     {
         IO.ShowHeader("EDIT PRODUCT");
 
-        List<Product> products =
-            productService.GetAllProducts();
+        List<Product> products = productService.GetAllProducts();
 
         string selectedProduct =
             IO.ShowSelectionMenu(
@@ -142,27 +122,21 @@ public class AdminController(
                     product.Name ==
                     selectedProduct);
 
-        product.Name =
-            IO.GetStringInput(
-                $"Product Name ({product.Name})");
+        product.Name = IO.GetStringInput($"Product Name ({product.Name})");
 
-        product.Description =
-            IO.GetStringInput(
-                $"Description ({product.Description})");
+        product.Description = IO.GetStringInput($"Description ({product.Description})");
 
         product.Category =
             IO.GetStringInput(
                 $"Category ({product.Category})");
 
         product.Price =
-            decimal.Parse(
-                IO.GetStringInput(
-                    $"Price ({product.Price})"));
+                IO.GetDecimalInput(
+                    $"Price ({product.Price})");
 
         product.Stock =
-            int.Parse(
-                IO.GetStringInput(
-                    $"Stock ({product.Stock})"));
+                IO.GetIntInput(
+                    $"Stock ({product.Stock})");
 
         productService.UpdateProduct(product);
 
