@@ -203,6 +203,13 @@ public class ProductController(
                 userService.UpdateUser(user);
             }
 
+            bool choice = IO.ConfirmAction("Want to confirm order?");
+
+            if (!choice)
+            {
+                return;
+            }
+
             Order order =
                 orderService.PlaceDirectOrder(
                     user.UserId,

@@ -57,4 +57,130 @@ public class ProductService(
         productRepository.DeleteProduct(
             productId);
     }
+
+    public void ImportProducts(string csvPath)
+    {
+        if (!File.Exists(csvPath))
+        {
+            throw new FileNotFoundException(
+                "CSV file not found.");
+        }
+
+        List<Product> existingProducts =
+            productRepository.GetAllProducts();
+
+        List<Product> productsToImport = [];
+
+        string[] lines =
+            File.ReadAllLines(csvPath);
+
+        if (lines.Length <= 1)
+        {
+            throw new Exception(
+                "CSV file contains no product data.");
+        }
+
+        foreach (string line in lines.Skip(1))
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                continue;
+            }
+
+            string[] values =
+                line.Split(',');
+
+            if (values.Length < 5)
+            {
+                continue;
+            }
+
+            string name =
+                values[0].Trim();
+
+            string description =
+                values[1].Trim();
+
+            string category =
+                values[2].Trim();
+
+            decimal price =
+                decimal.Parse(values[3].Trim());
+
+            int stock =
+                int.Parse(values[4].Trim());
+
+            bool exists =
+                existingProducts.Any(
+                    product =>
+                        product.Name.Equals(
+                            name,
+                            StringComparison.OrdinalIgnoreCase)
+                        &&
+                        product.Category.Equals(
+                            category,
+                            StringComparison.OrdinalIgnoreCase));
+
+            if (exists)
+            {
+                continue;
+            }
+
+            Product product = new()
+            {
+                ProductId = Guid.NewGuid(),
+                Name = name,
+                Description = description,
+                Category = category,
+                Price = price,
+                Stock = stock
+            };
+
+            productsToImport.Add(product);
+        }
+
+        if (!productsToImport.Any())
+        {
+            throw new Exception(
+                "No new products found to import.");
+        }
+
+        productRepository.AddProducts(
+            productsToImport);
+    }
+
+    public string ExportProducts(string exportPath)
+    {
+        List<Product> products =
+            productRepository.GetAllProducts();
+
+        List<string> lines =
+        [
+            "Name,Description,Category,Price,Stock"
+        ];
+
+        foreach (Product product in products)
+        {
+            lines.Add(
+                $"{product.Name}," +
+                $"{product.Description}," +
+                $"{product.Category}," +
+                $"{product.Price}," +
+                $"{product.Stock}");
+        }
+
+        string? directory =
+            Path.GetDirectoryName(exportPath);
+
+        if (!string.IsNullOrWhiteSpace(directory))
+        {
+            Directory.CreateDirectory(directory);
+        }
+
+        File.WriteAllLines(
+            exportPath,
+            lines);
+
+        return exportPath;
+    }
 }

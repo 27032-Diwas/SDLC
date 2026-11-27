@@ -5,10 +5,23 @@ using System.Text.Json;
 namespace ShoppingApp.Repository;
 public class ProductRepository : IProductRepository
 {
-    private const string FilePath = "Data/Products.json";
+    private readonly string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Data/Products.json");
 
     public List<Product> GetAllProducts()
     {
+
+        string? directoryPath = Path.GetDirectoryName(this.FilePath);
+
+        if (!string.IsNullOrEmpty(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        if (!File.Exists(this.FilePath))
+        {
+            File.WriteAllText(this.FilePath, "[]");
+        }
+
         string json = File.ReadAllText(FilePath);
 
         return JsonSerializer.Deserialize<List<Product>>(json)
@@ -126,6 +139,26 @@ public class ProductRepository : IProductRepository
         {
             products.Remove(product);
         }
+
+        string json =
+            JsonSerializer.Serialize(
+                products,
+                new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+        File.WriteAllText(
+            FilePath,
+            json);
+    }
+
+    public void AddProducts(List<Product> productsToAdd)
+    {
+        List<Product> products =
+            this.GetAllProducts();
+
+        products.AddRange(productsToAdd);
 
         string json =
             JsonSerializer.Serialize(

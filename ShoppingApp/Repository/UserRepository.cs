@@ -6,7 +6,7 @@ using System.Text.Json;
 
 public class UserRepository : IUserRepository
 {
-    private readonly string filePath = "Data/Users.json";
+    private readonly string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Data/Users.json");
 
     public bool AddUser(User user)
     {
@@ -61,6 +61,13 @@ public class UserRepository : IUserRepository
 
     private List<User> GetAllUsers()
     {
+        string? directoryPath = Path.GetDirectoryName(this.filePath);
+
+        if (!string.IsNullOrEmpty(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
         if (!File.Exists(this.filePath))
         {
             File.WriteAllText(this.filePath, "[]");

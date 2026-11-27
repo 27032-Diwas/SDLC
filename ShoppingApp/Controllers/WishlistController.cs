@@ -68,7 +68,6 @@ public class WishlistController(
             IO.ShowSelectionMenu(
                 "Choose Action",
                 [
-                    "Add To Cart",
                     "Remove From Wishlist",
                     "Back"
                 ]);
@@ -168,6 +167,13 @@ public class WishlistController(
                 user.Address = address;
 
                 userService.UpdateUser(user);
+            }
+
+            bool choice = IO.ConfirmAction("Want to confirm order?");
+
+            if (!choice)
+            {
+                return;
             }
 
             Order order =

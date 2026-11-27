@@ -6,8 +6,7 @@ namespace ShoppingApp.Repository;
 public class InvoiceRepository
     : IInvoiceRepository
 {
-    private const string FilePath =
-        "Data/Invoices.json";
+    private readonly string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Data/Invoices.json");
 
     public void AddInvoice(
         Invoice invoice)
@@ -40,6 +39,14 @@ public class InvoiceRepository
 
     private List<Invoice> GetAllInvoices()
     {
+
+        string? directoryPath = Path.GetDirectoryName(this.FilePath);
+
+        if (!string.IsNullOrEmpty(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
         if (!File.Exists(FilePath))
         {
             File.WriteAllText(FilePath, "[]");

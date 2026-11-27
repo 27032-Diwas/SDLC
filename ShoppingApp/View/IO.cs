@@ -224,7 +224,7 @@ public static class IO
     public static void ExitApplication()
     {
         ClearConsole();
-        var panel = new Panel($"[{Site.color}]Thank you for using choosing our shop! Come again.[/]")
+        var panel = new Panel($"[{Site.color}]Thank you for choosing our shop! Come again.[/]")
         {
             Border = BoxBorder.Double,
             Padding = new Padding(2, 1),

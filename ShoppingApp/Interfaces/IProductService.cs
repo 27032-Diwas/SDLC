@@ -62,4 +62,8 @@ public interface IProductService
     /// </summary>
     /// <param name="productId">Identifier of the product to remove.</param>
     void DeleteProduct(Guid productId);
+
+    void ImportProducts(string csvPath);
+
+    string ExportProducts(string exportPath);
 }

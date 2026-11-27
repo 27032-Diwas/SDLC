@@ -6,8 +6,7 @@ namespace ShoppingApp.Repository;
 public class WishlistRepository
     : IWishlistRepository
 {
-    private const string FilePath =
-        "Data/Wishlists.json";
+    private readonly string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Data/Wishlists.json");
 
     public List<WishlistItem> GetByUserId(
         Guid userId)
@@ -71,6 +70,14 @@ public class WishlistRepository
 
     private List<WishlistItem> GetAll()
     {
+
+        string? directoryPath = Path.GetDirectoryName(this.FilePath);
+
+        if (!string.IsNullOrEmpty(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
         if (!File.Exists(FilePath))
         {
             File.WriteAllText(FilePath, "[]");

@@ -5,7 +5,7 @@ namespace ShoppingApp.Repository;
 
 public class OrderRepository : IOrderRepository
 {
-    private const string FilePath = "Data/Orders.json";
+    private readonly string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Data/Orders.json");
 
     public void AddOrder(Order order)
     {
@@ -47,6 +47,14 @@ public class OrderRepository : IOrderRepository
 
     public List<Order> GetAllOrders()
     {
+
+        string? directoryPath = Path.GetDirectoryName(this.FilePath);
+
+        if (!string.IsNullOrEmpty(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
         if (!File.Exists(FilePath))
         {
             File.WriteAllText(FilePath, "[]");

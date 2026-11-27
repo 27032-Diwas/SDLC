@@ -62,4 +62,6 @@ public interface IProductRepository
     /// </summary>
     /// <returns>A list of product category names.</returns>
     List<string> GetCategories();
+
+    void AddProducts(List<Product> products);
 }

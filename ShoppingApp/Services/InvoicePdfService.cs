@@ -1,6 +1,5 @@
-﻿using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
+﻿using PdfSharpCore.Drawing;
+using PdfSharpCore.Pdf;
 using ShoppingApp.Models;
 
 namespace ShoppingApp.Services;
@@ -23,87 +22,190 @@ public class InvoicePdfService
                 folderPath,
                 $"Invoice_{invoice.InvoiceId}.pdf");
 
-        Document.Create(container =>
+        PdfDocument document = new();
+
+        document.Info.Title =
+            "Shopping App Invoice";
+
+        PdfPage page =
+            document.AddPage();
+
+        XGraphics graphics =
+            XGraphics.FromPdfPage(page);
+
+        XFont headerFont =
+            new XFont(
+                "Arial",
+                18,
+                XFontStyle.Bold);
+
+        XFont normalFont =
+            new XFont(
+                "Arial",
+                12,
+                XFontStyle.Regular);
+
+        XFont boldFont =
+            new XFont(
+                "Arial",
+                12,
+                XFontStyle.Bold);
+
+        int y = 40;
+
+        graphics.DrawString(
+            "SHOPPING APP INVOICE",
+            headerFont,
+            XBrushes.Black,
+            new XRect(
+                0,
+                y,
+                page.Width,
+                20),
+            XStringFormats.TopCenter);
+
+        y += 40;
+
+        graphics.DrawString(
+            $"Invoice Number : {invoice.InvoiceId}",
+            normalFont,
+            XBrushes.Black,
+            40,
+            y);
+
+        y += 20;
+
+        graphics.DrawString(
+            $"Customer Name : {invoice.CustomerName}",
+            normalFont,
+            XBrushes.Black,
+            40,
+            y);
+
+        y += 20;
+
+        graphics.DrawString(
+            $"Date : {invoice.InvoiceDate:dd-MM-yyyy HH:mm}",
+            normalFont,
+            XBrushes.Black,
+            40,
+            y);
+
+        y += 40;
+
+        graphics.DrawString(
+            "Product",
+            boldFont,
+            XBrushes.Black,
+            40,
+            y);
+
+        graphics.DrawString(
+            "Qty",
+            boldFont,
+            XBrushes.Black,
+            250,
+            y);
+
+        graphics.DrawString(
+            "Price",
+            boldFont,
+            XBrushes.Black,
+            320,
+            y);
+
+        graphics.DrawString(
+            "Total",
+            boldFont,
+            XBrushes.Black,
+            420,
+            y);
+
+        y += 20;
+
+        foreach (CartItem item in invoice.Items)
         {
-            container.Page(page =>
-            {
-                page.Margin(20);
+            graphics.DrawString(
+                item.ProductName,
+                normalFont,
+                XBrushes.Black,
+                40,
+                y);
 
-                page.Header()
-                    .Text("SHOPPING APP INVOICE")
-                    .FontSize(20)
-                    .Bold();
+            graphics.DrawString(
+                item.Quantity.ToString(),
+                normalFont,
+                XBrushes.Black,
+                250,
+                y);
 
-                page.Content()
-                    .Column(column =>
-                    {
-                        column.Item().Text(
-                            $"Invoice Number : {invoice.InvoiceId}");
+            graphics.DrawString(
+                $"Rs. {item.UnitPrice}",
+                normalFont,
+                XBrushes.Black,
+                320,
+                y);
 
-                        column.Item().Text(
-                            $"Customer Name : {invoice.CustomerName}");
+            graphics.DrawString(
+                $"Rs. {item.TotalPrice}",
+                normalFont,
+                XBrushes.Black,
+                420,
+                y);
 
-                        column.Item().Text(
-                            $"Date : {invoice.InvoiceDate}");
+            y += 20;
+        }
 
-                        column.Item().PaddingVertical(10);
+        y += 20;
 
-                        column.Item().Table(table =>
-                        {
-                            table.ColumnsDefinition(columns =>
-                            {
-                                columns.RelativeColumn(4);
-                                columns.RelativeColumn(1);
-                                columns.RelativeColumn(2);
-                                columns.RelativeColumn(2);
-                            });
+        graphics.DrawString(
+            $"Product Amount : Rs. {invoice.ProductAmount}",
+            normalFont,
+            XBrushes.Black,
+            40,
+            y);
 
-                            table.Header(header =>
-                            {
-                                header.Cell().Text("Product");
-                                header.Cell().Text("Qty");
-                                header.Cell().Text("Price");
-                                header.Cell().Text("Total");
-                            });
+        y += 20;
 
-                            foreach (CartItem item in invoice.Items)
-                            {
-                                table.Cell().Text(item.ProductName);
+        graphics.DrawString(
+            $"Delivery Charge : Rs. {invoice.DeliveryCharge}",
+            normalFont,
+            XBrushes.Black,
+            40,
+            y);
 
-                                table.Cell().Text(
-                                    item.Quantity.ToString());
+        y += 20;
 
-                                table.Cell().Text(
-                                    $"₹{item.UnitPrice}");
+        graphics.DrawString(
+            $"Discount : Rs. {invoice.DiscountAmount}",
+            normalFont,
+            XBrushes.Black,
+            40,
+            y);
 
-                                table.Cell().Text(
-                                    $"₹{item.TotalPrice}");
-                            }
-                        });
+        y += 20;
 
-                        column.Item().PaddingTop(20);
+        graphics.DrawString(
+            $"Final Amount : Rs. {invoice.FinalAmount}",
+            boldFont,
+            XBrushes.Black,
+            40,
+            y);
 
-                        column.Item().Text(
-                            $"Product Amount : ₹{invoice.ProductAmount}");
+        y += 40;
 
-                        column.Item().Text(
-                            $"Delivery Charge : ₹{invoice.DeliveryCharge}");
+        graphics.DrawString(
+            "Thank You For Shopping With Us",
+            normalFont,
+            XBrushes.Black,
+            new XRect(
+                0,
+                y,
+                page.Width,
+                20),
+            XStringFormats.TopCenter);
 
-                        column.Item().Text(
-                            $"Discount : ₹{invoice.DiscountAmount}");
-
-                        column.Item().Text(
-                            $"Final Amount : ₹{invoice.FinalAmount}")
-                            .Bold()
-                            .FontSize(16);
-                    });
-
-                page.Footer()
-                    .AlignCenter()
-                    .Text("Thank You For Shopping With Us");
-            });
-        })
-        .GeneratePdf(filePath);
+        document.Save(filePath);
 
         return filePath;
     }

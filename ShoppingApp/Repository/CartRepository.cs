@@ -6,7 +6,7 @@ namespace ShoppingApp.Repository;
 
 public class CartRepository : ICartRepository
 {
-    private const string FilePath = "Data/Carts.json";
+    private readonly string FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Data/Carts.json");
 
     public Cart GetByUserId(Guid userId)
     {
@@ -109,6 +109,14 @@ public class CartRepository : ICartRepository
 
     private List<Cart> GetAllCarts()
     {
+
+        string? directoryPath = Path.GetDirectoryName(this.FilePath);
+
+        if (!string.IsNullOrEmpty(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
         if (!File.Exists(FilePath))
         {
             File.WriteAllText(FilePath, "[]");
